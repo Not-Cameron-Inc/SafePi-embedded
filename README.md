@@ -100,3 +100,9 @@ ssh <username>@safepi.local
 - [nRF Connect mobile app description](https://www.nordicsemi.com/Products/Development-tools/nrf-connect-for-mobile)
 
 - [LGPIO Docs](https://abyz.me.uk/lg/py_lgpio.html)
+
+- [Blinking Light tutorial](https://raspberrypihq.com/making-a-led-blink-using-the-raspberry-pi-and-python/)
+
+- [BLE Python Server](https://github.com/kevincar/bless)
+
+- [BLE Python Client](https://github.com/hbldh/bleak)
