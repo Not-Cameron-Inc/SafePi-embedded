@@ -1,3 +1,2 @@
 bless
 bleak
-python3-lgpios
