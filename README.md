@@ -10,6 +10,24 @@ sudo apt update
 sudo apt upgrade -y
 reboot
 ```
+
+When the RPi boots back up, go ahead and install some necessary libraries:
+```
+sudo apt install python3-lgpio pip
+```
+Now that pip is installed, clone the repo in whatever directory seems fit. I chose the home folder because that is the purpose of the device, and that is easier to deal with:
+```
+git clone https://github.com/Not-Cameron-Inc/SafePi-embedded.git
+cd SafePi-embedded
+pip install -r requirements.txt
+```
+### Run BLE Server
+If you have not setup the wifi network, you can move to the next section, and come back here when you are done. Or, if you just want to get the BLE running for test, you can run that right now. Either way, to startup a BLE server, run this command from your repo's home dir:
+```
+python3 examples/bless-server.py
+```
+You can now open the nRF Connect app and view scan for the connection named SafePi. How bout that...
+
 ### Wifi
 After the system reboots, we can set up the wifi. A yaml config was generated in the ```/etc/netplan/``` dir under various names depending on your system (mine was "50-cloud-init.yaml"). You might want to make a copy of this config before you edit it, but before you do this, you'll need the name of your wireless interface. Usually it's "wlan0", but this can be different, so check by running:
 ```
