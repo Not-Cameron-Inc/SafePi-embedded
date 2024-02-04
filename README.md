@@ -98,3 +98,5 @@ ssh <username>@safepi.local
 - [Ubunter Server install for RPi](https://ubuntu.com/tutorials/how-to-install-ubuntu-on-your-raspberry-pi#1-overview)
 
 - [nRF Connect mobile app description](https://www.nordicsemi.com/Products/Development-tools/nrf-connect-for-mobile)
+
+- [LGPIO Docs](https://abyz.me.uk/lg/py_lgpio.html)
