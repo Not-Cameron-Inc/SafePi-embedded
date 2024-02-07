@@ -124,3 +124,7 @@ ssh <username>@safepi.local
 - [BLE Python Server](https://github.com/kevincar/bless)
 
 - [BLE Python Client](https://github.com/hbldh/bleak)
+
+- [Bleak Docs](https://bleak.readthedocs.io/en/latest/api/index.html)
+
+- [Android BLE](https://github.com/NordicSemiconductor/Android-BLE-Library)
