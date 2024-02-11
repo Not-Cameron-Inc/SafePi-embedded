@@ -16,13 +16,13 @@ async def run():
 
             # Reading back the value from the characteristic
             value = await client.read_gatt_char(CHAR_UUID_READ)
-            print(f"Read from characteristic {CHAR_UUID_READ}: {decrypt(value)}")
+            print(f"Read from characteristic {CHAR_UUID_READ}: {decrypt(value, '', '')}")
 
             # Writing to the characteristic
             ssid = input("Please enter wifi network name:")
             password = input("Enter wifi password:")
             message = f'{ssid} {password}'
-            encrypted_message = encrypt(message)
+            encrypted_message = encrypt(message, '', '')
             print(f"Writing to characteristic {CHAR_UUID_WRITE}: {encrypted_message}")
             await client.write_gatt_char(CHAR_UUID_WRITE, encrypted_message)
             print("Write successful")
