@@ -1,9 +1,15 @@
 import asyncio
-from bleak import BleakClient
+from bleak import BleakScanner, BleakClient
 
 async def run():
-    async with BleakClient("SafePiServer") as client:
-        value = await client.read_gatt_char("51FF12BB-3ED8-46E5-B4F9-D64E2FEC021B")
-        print("Read value:", value.decode('utf-8'))
+    device = await BleakScanner.find_device_by_name(name='SafePiServer', timeout=15.0)
+    if device:
+        async with BleakClient(device.address) as client:
+            await client.connect()
+            value = await client.read_gatt_char("51FF12BB-3ED8-46E5-B4F9-D64E2FEC021B")
+            print("Read value:", value.decode('utf-8'))
+    else:
+        print("Device not found")
 
 asyncio.run(run())
+
