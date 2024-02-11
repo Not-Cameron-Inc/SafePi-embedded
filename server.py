@@ -21,7 +21,7 @@ def read_request(characteristic: BlessGATTCharacteristic, **kwargs) -> bytearray
 def write_request(characteristic: BlessGATTCharacteristic, value: Any, **kwargs):
     logger.debug(f"Write request to {characteristic.uuid}: {value}")
     # Here you can handle incoming write requests, if needed
-    logger.debug(f'Decrypted: {decrypt(value, '', '')}')
+    logger.debug(f'Decrypted: {decrypt(value, AES_KEY, IV)}')
     
 
 async def run(loop):
