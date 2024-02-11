@@ -10,8 +10,8 @@ IV = b'\x01\x23\x45\x67\x89\xab\xcd\xef\xfe\xdc\xba\x98\x76\x54\x32\x10'
 
 # Encryption function
 def encrypt(plaintext, aes_key, iv):
-    global AES_KEY
-    global IV
+    aes_key = AES_KEY
+    iv = IV
     padder = padding.PKCS7(algorithms.AES.block_size).padder()
     plaintext_padded = padder.update(plaintext.encode('utf-8')) + padder.finalize()
     
@@ -22,8 +22,8 @@ def encrypt(plaintext, aes_key, iv):
 
 # Decryption function
 def decrypt(ciphertext, aes_key, iv):
-    global AES_KEY
-    global IV
+    aes_key = AES_KEY
+    iv = IV
     cipher = Cipher(algorithms.AES(aes_key), modes.CBC(iv), backend=default_backend())
     decryptor = cipher.decryptor()
     decrypted_padded = decryptor.update(ciphertext) + decryptor.finalize()
