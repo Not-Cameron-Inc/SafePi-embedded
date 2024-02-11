@@ -7,7 +7,7 @@ DATA_TO_WRITE = b'Hello from client'  # Data to write to the characteristic
 
 async def run():
     # Find the device by its advertised name
-    device = await BleakScanner.find_device_by_name(name='SafePiServer', timeout=20.0)
+    device = await BleakScanner.find_device_by_name(name='SafePi', timeout=20.0)
     
     if device:
         async with BleakClient(device.address) as client:

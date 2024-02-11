@@ -39,7 +39,7 @@ async def run(loop):
         }
     }
 
-    server = BlessServer(name="SafePiServer", loop=loop)
+    server = BlessServer(name="SafePi", loop=loop)
     server.read_request_func = read_request
     server.write_request_func = write_request
 
