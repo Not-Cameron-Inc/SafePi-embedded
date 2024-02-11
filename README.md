@@ -4,32 +4,10 @@ This is the repository for the embedded SafePi platform.
 ## Setup RPi4:
 For instructions on how to image your micro SD card with Ubuntu Server 22.04, follow this link [HERE](https://ubuntu.com/tutorials/how-to-install-ubuntu-on-your-raspberry-pi#1-overview). To avoid issues, it is recommended that you install the same distro exactly, which would be Ubuntu-Server 22.04.3 LTS. After the system has been installed, boot the image and login with username:```ubuntu``` password:```ubuntu```. You will then be prompted to change you password.
 
-If you have access to an ethernet connection, plug it in and run these commands:
-```
-sudo apt update
-sudo apt upgrade -y
-reboot
-```
-
-When the RPi boots back up, go ahead and install some necessary libraries:
-```
-sudo apt install python3-lgpio pip
-```
-Now that pip is installed, clone the repo in whatever directory seems fit. I chose the home folder because that is the purpose of the device, and that is easier to deal with:
-```
-git clone https://github.com/Not-Cameron-Inc/SafePi-embedded.git
-cd SafePi-embedded
-pip install -r requirements.txt
-```
-### Run BLE Server
-If you have not setup the wifi network, you can move to the next section, and come back here when you are done. Or, if you just want to get the BLE running for test, you can run that right now. Either way, to startup a BLE server, run this command from your repo's home dir:
-```
-python3 examples/bless-server.py
-```
-You can now open the nRF Connect app and view scan for the connection named SafePi. How bout that...
-
 ### Wifi
-After the system reboots, we can set up the wifi. A yaml config was generated in the ```/etc/netplan/``` dir under various names depending on your system (mine was "50-cloud-init.yaml"). You might want to make a copy of this config before you edit it, but before you do this, you'll need the name of your wireless interface. Usually it's "wlan0", but this can be different, so check by running:
+If you have access to an ethernet connection, you can use that for now, but you will have to setup wifi eventually. If you would like to do this later, skip to to the *General Setup* section below.
+
+ A yaml config was generated in the ```/etc/netplan/``` dir under various names depending on your system (mine was "50-cloud-init.yaml"). You might want to make a copy of this config before you edit it, but before you do this, you'll need the name of your wireless interface. Usually it's "wlan0", but this can be different, so check by running:
 ```
 ip link show
 # or if net-tools has been installed
@@ -76,8 +54,8 @@ sudo netplan --debug apply
 reboot
 ```
 
-### Hostname
-The last thing you should set up is the hostname so that you don't have to remember the IP everytime you want to ssh in. Run this command to set your hostname (assuming your hostname will be "safepi"):
+### Make Accessing (SSH) Great Again
+The last thing you should set up before switching to SSH is the hostname so that you don't have to remember the IP everytime you want to ssh in. Run this command to set your hostname (assuming your hostname will be "safepi"):
 ```
 sudo hostnamectl set-hostname safepi
 ```
@@ -105,6 +83,36 @@ sudo apt install avahi-daemon
 Once that is installed, it's probably a good idea to reboot. Now you should be able to ssh in while inside your lan using this form:
 ```
 ssh <username>@safepi.local
+```
+
+### General Setup
+Run these commands to get started:
+
+```
+sudo apt update
+sudo apt full-upgrade -y
+reboot
+```
+
+When the RPi boots back up, go ahead and install some necessary libraries:
+```
+sudo apt install python3-lgpio pip
+```
+Now that pip is installed, clone the repo in whatever directory seems fit. I chose the home folder because that is the purpose of the device, and that is easier to deal with:
+```
+git clone https://github.com/Not-Cameron-Inc/SafePi-embedded.git
+cd SafePi-embedded
+pip install -r requirements.txt
+```
+
+### Run BLE Server
+To startup a BLE server, run this command from your repo's home dir:
+```
+python3 server.py
+```
+You can now open the nRF Connect app and view scan for the connection named SafePi. If you want to read and write data using the client app, then open this project on another device and run:
+```
+python3 client.py
 ```
 
 
