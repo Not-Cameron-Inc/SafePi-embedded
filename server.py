@@ -20,8 +20,7 @@ def read_request(characteristic: BlessGATTCharacteristic, **kwargs) -> bytearray
 def write_request(characteristic: BlessGATTCharacteristic, value: Any, **kwargs):
     logger.debug(f"Write request to {characteristic.uuid}: {value}")
     # Here you can handle incoming write requests, if needed
-    print("WIFI info: {value}")
-
+    
 
 async def run(loop):
     #define a GATT server with one service and two characteristics. One for reading, and the other for writing.

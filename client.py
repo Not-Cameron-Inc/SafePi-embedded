@@ -21,8 +21,8 @@ async def run():
             ssid = input("Please enter wifi network name:")
             password = input("Enter wifi password:")
             print(f"Writing to characteristic {CHAR_UUID_WRITE}: {DATA_TO_WRITE}")
-            await client.write_gatt_char(CHAR_UUID_WRITE, ssid)
-            await client.write_gatt_char(CHAR_UUID_WRITE, password)
+            await client.write_gatt_char(CHAR_UUID_WRITE, ssid.encode('utf-8'))
+            await client.write_gatt_char(CHAR_UUID_WRITE, password.encode('utf-8'))
             print("Write successful")
 
     else:
