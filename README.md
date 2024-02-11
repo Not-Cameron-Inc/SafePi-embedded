@@ -120,7 +120,8 @@ This a sequence diagram for the initial device provisioning process:
 ![sequence](figures/sequence-diagram.png)
 
 ### Encryption Scheme:
-
+This is a chart of the encryption scheme for each connection:
+![Encryption Scheme](figures/encryption-diagram.png)
 
 
 ## References:
