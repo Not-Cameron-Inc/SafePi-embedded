@@ -65,7 +65,7 @@ async def run(loop):
                 }
             }
         }
-    my_service_name = "SafePi-Tree"
+    my_service_name = "SafePi"
     server = BlessServer(name=my_service_name, loop=loop)
     server.read_request_func = read_request
     server.write_request_func = write_request
