@@ -20,11 +20,14 @@ async def find_device(char_uuid, data_bytes):
                             print(char)
                             if char.uuid == char_uuid:
                                 print(f"Found characteristic {char_uuid}, writing data...")
-                                await client.write_gatt_char(char_uuid, data=data_bytes)
-                                print("Write successful")
+                                try:
+                                    await client.write_gatt_char(char, data=data_bytes)
+                                    print("Write successful")
+                                except Exception as e:
+                                    print(f'Exception: {e}')
                                 break
-                    else:
-                        print(f"Characteristic {char_uuid} not found.")
+                            else:
+                                print(f"Characteristic {char_uuid} not found.")
                 else:
                     print("Failed to connect to SafePi")
             except Exception as e:
