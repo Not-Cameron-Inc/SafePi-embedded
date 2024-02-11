@@ -119,6 +119,9 @@ python3 client.py
 This a sequence diagram for the initial device provisioning process:
 ![sequence](figures/sequence-diagram.png)
 
+### Encryption Scheme:
+
+
 
 ## References:
 - [Setup wifi on ubuntu server](https://askubuntu.com/questions/1143287/how-to-setup-of-raspberry-pi-3-onboard-wifi-for-ubuntu-server-with-netplan/1143594#1143594?newreg=4bbf1c68180f4c128cc5125a64917a85)

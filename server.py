@@ -1,7 +1,7 @@
 import logging
 import asyncio
-import threading
 
+from utils import *
 from typing import Any, Dict
 from bless import BlessServer, BlessGATTCharacteristic, GATTCharacteristicProperties, GATTAttributePermissions
 
@@ -12,14 +12,16 @@ logger = logging.getLogger(name=__name__)
 def read_request(characteristic: BlessGATTCharacteristic, **kwargs) -> bytearray:
     # This is where we define what data is returned when the characteristic is read
     # For example, return a simple string converted to bytes"
-    return_data = "Hello from server".encode('utf-8')
-    logger.debug(f"Reading {characteristic.uuid}: {return_data}")
-    return bytearray(return_data)
+    message = "Hello from server"
+    encrypted_message = encrypt(message)
+    logger.debug(f"Reading {characteristic.uuid}: {encrypted_message}")
+    return bytearray(encrypted_message)
 
 
 def write_request(characteristic: BlessGATTCharacteristic, value: Any, **kwargs):
     logger.debug(f"Write request to {characteristic.uuid}: {value}")
     # Here you can handle incoming write requests, if needed
+    logger.debug(f'Decrypted: {decrypt(value)}')
     
 
 async def run(loop):
