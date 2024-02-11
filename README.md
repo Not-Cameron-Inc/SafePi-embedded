@@ -117,8 +117,18 @@ python3 client.py
 
 ### Sequence:
 This a sequence diagram for the initial device provisioning process:
-- ![sequence](figures/sequence-diagram.png)
+![sequence](figures/sequence-diagram.png)
 
+```mermaid
+sequenceDiagram
+    autonumber
+    AndroidApp->>Webserver: I need a token.
+    Webserver->>AndroidApp: Token:lkjsbdcoiyu3927ghibjkabsd
+    create participant RPi
+    AndroidApp->>RPi: Token:lkjsbdcoiyu3927ghibjkabsd
+    RPi->>Webserver: Token:lkjsbdcoiyu3927ghibjkabsd
+    Webserver->>RPi: Connection Confirmed
+```
 
 ## References:
 - [Setup wifi on ubuntu server](https://askubuntu.com/questions/1143287/how-to-setup-of-raspberry-pi-3-onboard-wifi-for-ubuntu-server-with-netplan/1143594#1143594?newreg=4bbf1c68180f4c128cc5125a64917a85)
