@@ -13,16 +13,14 @@ def read_request(characteristic: BlessGATTCharacteristic, **kwargs) -> bytearray
     # This is where we define what data is returned when the characteristic is read
     # For example, return a simple string converted to bytes"
     message = "Hello from server"
-    encrypted_message = encrypt(message, '', '')
-    logger.debug(f"Reading {characteristic.uuid}: {encrypted_message}")
+    logger.debug(f"Reading {characteristic.uuid}: {message}")
     return bytearray(message.encode('utf-8')) # currently returning the unencrypted message
 
 
 def write_request(characteristic: BlessGATTCharacteristic, value: Any, **kwargs):
     logger.debug(f"Write request to {characteristic.uuid}: {value}")
     # Here you can handle incoming write requests, if needed
-    logger.debug(f'Before Decryption:')
-    # logger.debug(f'Decrypted: {decrypt(value, AES_KEY, IV)}')
+    logger.debug(f'Value Written: {value}')
     
 
 async def run(loop):
