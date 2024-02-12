@@ -21,7 +21,8 @@ async def run():
             # Writing to the characteristic
             ssid = input("Please enter wifi network name:")
             password = input("Enter wifi password:")
-            message = f'{ssid} {password}'
+            # define a "wifi" command, so that our server knows to use this to sign into wifi.
+            message = f'{'wifi'} {ssid} {password}'
             encrypted_message = encrypt(message, '', '')
             print(f"Writing to characteristic {CHAR_UUID_WRITE}: {encrypted_message}")
             await client.write_gatt_char(CHAR_UUID_WRITE, encrypted_message)

@@ -2,3 +2,4 @@ bless
 bleak
 dbus_next
 cryptography
+requests
