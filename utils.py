@@ -61,8 +61,8 @@ def handle_write(message):
         reboot()
 
 def wifi_signin(ssid, password):
-    temp_path = f'{os.getcwd()}/tmp/temp.conf'
-    config_path = '/etc/netplan/50-cloud-init-tempt.yaml'
+    temp_path = f'{os.getcwd()}/tmp/50-cloud-init-temp.yaml'
+    config_path = '/etc/netplan/'
     netplan_config_content = f"""\
 # This file is generated from information provided by
 # the datasource.  Changes to it will not persist across an instance.
