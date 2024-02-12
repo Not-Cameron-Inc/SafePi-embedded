@@ -15,7 +15,7 @@ def read_request(characteristic: BlessGATTCharacteristic, **kwargs) -> bytearray
     message = "Hello from server"
     encrypted_message = encrypt(message, '', '')
     logger.debug(f"Reading {characteristic.uuid}: {encrypted_message}")
-    return bytearray(message) # currently returning the unencrypted message
+    return bytearray(message.encode('utf-8')) # currently returning the unencrypted message
 
 
 def write_request(characteristic: BlessGATTCharacteristic, value: Any, **kwargs):
