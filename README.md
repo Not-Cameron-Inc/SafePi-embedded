@@ -127,12 +127,11 @@ We will assume that the user is "ubuntu" as that was the default one, but if you
 ```
 [Unit]
 Description=Startup for SafePi BLE broadcast server.
-After=network.target bluetooth.target
-Wants=network.target bluetooth.target
 
 [Service]
 WorkingDirectory=/home/ubuntu/SafePi-embedded
 Environment="PATH=/home/ubuntu/SafePi-embedded/venv/bin"
+ExecStartPre=/bin/sleep 10
 ExecStart=/home/ubuntu/SafePi-embedded/venv/bin/python3 safepi.py
 
 [Install]

@@ -63,7 +63,7 @@ def handle_write(message):
         reboot()
 
 def wifi_signin(ssid, password):
-    temp_path = f'{os.getcwd()}/tmp/50-cloud-init-temp.yaml'
+    temp_path = f'{os.getcwd()}/tmp/50-cloud-init.yaml'
     config_path = '/etc/netplan/'
     netplan_config_content = f"""\
 # This file is generated from information provided by
@@ -89,7 +89,7 @@ network:
         f.write(netplan_config_content)
     try:
         subprocess.run(['/bin/cp', temp_path, config_path], check=True)
-        # subprocess.run(["netplan", "apply"], check=True)
+        subprocess.run(["/usr/sbin/netplan", "apply"], check=True)
         return True
     except subprocess.CalledProcessError:
         return False
