@@ -88,7 +88,7 @@ network:
     with open(temp_path, "w") as f:
         f.write(netplan_config_content)
     try:
-        subprocess.run(['bin/cp', temp_path, config_path], check=True)
+        subprocess.run(['/bin/cp', temp_path, config_path], check=True)
         # subprocess.run(["netplan", "apply"], check=True)
         return True
     except subprocess.CalledProcessError:
