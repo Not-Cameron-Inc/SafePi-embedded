@@ -96,7 +96,7 @@ reboot
 
 When the RPi boots back up, go ahead and install some necessary libraries:
 ```
-sudo apt install python3-lgpio pip
+sudo apt install python3-lgpio pip python3.10-venv
 ```
 Now that pip is installed, clone the repo in whatever directory seems fit. I chose the home folder because that is the purpose of the device, and that is easier to deal with:
 ```

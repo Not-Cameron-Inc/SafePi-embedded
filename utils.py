@@ -88,13 +88,13 @@ network:
     with open(temp_path, "w") as f:
         f.write(netplan_config_content)
     try:
-        subprocess.run(['cp', temp_path, config_path], check=True)
-        subprocess.run(["netplan", "apply"], check=True)
+        subprocess.run(['bin/cp', temp_path, config_path], check=True)
+        # subprocess.run(["netplan", "apply"], check=True)
         return True
     except subprocess.CalledProcessError:
         return False
     finally:
-        subprocess.run(["rm", temp_path], check=False)
+        subprocess.run(["/bin/rm", temp_path], check=False)
 
 def reboot():
     try:
