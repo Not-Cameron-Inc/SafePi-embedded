@@ -102,8 +102,12 @@ Now that pip is installed, clone the repo in whatever directory seems fit. I cho
 ```
 git clone https://github.com/Not-Cameron-Inc/SafePi-embedded.git
 cd SafePi-embedded
+python3 -m venv venv # make virtual env
+source venv/bin/activate
 pip install -r requirements.txt
 ```
+IMPORTANT: Do not skip creating the python virtual environment. We will use it later for the startup service that runs as root. We'll point it directly to where these binaries are in the venv because pip does not install system winde. Virtual environments are also a great way to manage you dependencies. 
+
 
 ### Run BLE Server
 To startup a BLE server, run this command from your repo's home dir:
@@ -114,7 +118,41 @@ You can now open the nRF Connect app and view scan for the connection named Safe
 ```
 python3 client.py
 ```
+### Creating a Startup Service:
+This step is crucial for allowing our scripts to run on startup, and to make the necessary changes as a root user. Follow these instructions very carefully. Create a service with the following command:
+```
+sudo nano /etc/systemd/system/safepi.service
+```
+We will assume that the user is "ubuntu" as that was the default one, but if yours is different, then you'll have to change the paths in the below code to match. Paste this code in:
+```
+[Unit]
+Description=Startup for SafePi BLE broadcast server.
+After=network.target bluetooth.target
+Wants=network.target bluetooth.target
 
+[Service]
+WorkingDirectory=/home/ubuntu/SafePi-embedded
+Environment="PATH=/home/ubuntu/SafePi-embedded/venv/bin"
+ExecStart=/home/ubuntu/SafePi-embedded/venv/bin/python3 safepi.py
+
+[Install]
+WantedBy=multi-user.target
+```
+Ctrl-s to save and ctrl-x to exit. Now enable the service and run it:
+```
+sudo systemctl enable safepi
+sudo systemctl start safepi
+sudo systemctl status safepi
+```
+The last "status" command should return a green active indicator with more text. Running this command will allow you to verify the service, and to see the debug messages. Reboot your system and then run the status command again to verify your service was setup correctly.
+
+Run this command to monitor the service in real-time:
+```
+sudo journalctl -u safepi -f
+
+```
+
+## Diagrams
 ### Sequence:
 This a sequence diagram for the initial device provisioning process:
 ![sequence](figures/sequence-diagram.png)
