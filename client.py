@@ -84,7 +84,7 @@ def run_client(args):
     asyncio.run(run())
 
 async def wifi_cmd(client, shell_args):
-    shell_args.insert('placehold')
+    shell_args.insert(0, 'placehold')
     await write_cmd(client, shell_args)
 
 async def read_cmd(client):
@@ -92,11 +92,11 @@ async def read_cmd(client):
     print(f"Read from characteristic {CHAR_UUID_READ}: {decrypt(value, '', '')}")
 
 async def token_cmd(client, shell_args):
-    shell_args.insert('placehold')
+    shell_args.insert(0, 'placehold')
     await write_cmd(client, shell_args)
 
 async def reboot_cmd(client, shell_args):
-    shell_args.insert('placehold')
+    shell_args.insert(0, 'placehold')
     await write_cmd(client, shell_args)
 
 async def write_cmd(client, shell_args):

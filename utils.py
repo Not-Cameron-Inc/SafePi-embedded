@@ -68,6 +68,8 @@ def handle_write(message):
         send_token(word_list[1])
     elif command == 'reboot':
         reboot()
+    elif command == 'shutdown':
+        shutdown()
 
 def wifi_signin(ssid, password):
     temp_path = f'{os.getcwd()}/tmp/50-cloud-init.yaml'
@@ -103,7 +105,7 @@ network:
     finally:
         subprocess.run(["/bin/rm", temp_path], check=False)
 
-def send_token():
+def send_token(token):
     return True
 
 def reboot():
@@ -111,6 +113,12 @@ def reboot():
         subprocess.run(["reboot"])
     except Exception as e:
         print(f"Error occurred while rebooting: {e}")
+
+def shutdown():
+    try:
+        subprocess.run(["shutdown", "-h", "now"])
+    except Exception as e:
+        print(f"Error occurred while shutting down: {e}")
 
 ################################################################################## 
 
