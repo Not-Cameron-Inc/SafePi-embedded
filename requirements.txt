@@ -3,3 +3,4 @@ bleak
 dbus_next
 cryptography
 requests
+lgpio

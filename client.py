@@ -3,6 +3,13 @@
 import asyncio
 from bleak import BleakScanner, BleakClient
 from utils import *
+import warnings
+
+# I hate this warning
+import warnings
+
+# Filter out the specific warning
+warnings.filterwarnings("ignore", category=UserWarning)
 
 CHAR_UUID_READ = "51FF12BB-3ED8-46E5-B4F9-D64E2FEC021B"
 CHAR_UUID_WRITE = "52FF12BB-3ED8-46E5-B4F9-D64E2FEC021B"
