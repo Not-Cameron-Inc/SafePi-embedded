@@ -7,6 +7,7 @@ import subprocess
 import requests
 import lgpio
 import os
+import threading
 
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
@@ -120,15 +121,28 @@ def internet_on():
     except requests.RequestException:
         return False
 
+def wait_animation(msg, event):
+    """Simple animation to be run in a thread"""
+    i = 0  # Initialize counter outside the loop
+    while not event.is_set():
+        i = (i % 3) + 1  # Increment counter, reset to 1 after 4
+        dots = '.' * i
+        # Clear line and print the message with dots
+        print(f'\r{" " * (len(msg) + 4)}', end='\r')  # Clear with spaces
+        print(f'\r{msg}{dots}', end='', flush=True)
+        time.sleep(1)
+    print('\r' + ' ' * (len(msg) + 4), end='\r') 
+
 ################################################################################## 
     
-# Function to initialize the GPIO pin
 def setup_gpio(pin):
+    """ Function to initialize the GPIO pin """
     h = lgpio.gpiochip_open(0)  # Open the default gpiochip
     lgpio.gpio_claim_output(h, pin)
     return h
     
 def indicator_solid():
+    """ Function that turns on indicator light, indicating wifi is connected """
     LED_PIN = 14
     handle = setup_gpio(LED_PIN)
     try:
@@ -138,6 +152,7 @@ def indicator_solid():
         lgpio.gpiochip_close(handle)  # Release the GPIO pin
 
 def indicator_blinking():
+    """ Function that blinks indicator light. Used when network is down. """
     LED_PIN = 14
     BLINK_INTERVAL = 1
     handle = setup_gpio(LED_PIN)
