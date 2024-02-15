@@ -63,6 +63,8 @@ def run_client(args):
                             await token_cmd(client, shell_args)
                         if command == 'reboot':
                             await reboot_cmd(client, shell_args)
+                        if command == 'shutdown':
+                            await shutdown_cmd(client, shell_args)
                         if command == 'write':
                             if len(shell_args) == 1:
                                 shell_args.append(input('Enter message:'))
@@ -96,6 +98,10 @@ async def token_cmd(client, shell_args):
     await write_cmd(client, shell_args)
 
 async def reboot_cmd(client, shell_args):
+    shell_args.insert(0, 'placehold')
+    await write_cmd(client, shell_args)
+
+async def shutdown_cmd(client, shell_args):
     shell_args.insert(0, 'placehold')
     await write_cmd(client, shell_args)
 
