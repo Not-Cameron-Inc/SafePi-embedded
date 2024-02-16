@@ -29,7 +29,6 @@ def write_request(characteristic: BlessGATTCharacteristic, value: Any, **kwargs)
     handle_write(message)
     
     
-
 async def run(loop):
     #define a GATT server with one service and two characteristics. One for reading, and the other for writing.
     gatt: Dict = {

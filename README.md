@@ -1,6 +1,12 @@
 # SafePi-Embedded
 This is the repository for the embedded SafePi platform. 
 
+TODO:
+- Add an actual LED to test the blinking and solid light functions for indicating wifi connection.
+- Add two wires that I can touch together to represent the door lock, sending the post update. 
+- Implement OAuth2 client. We already have a token passing command handler, but we may need to pass more than that. We'll likely need to store and setup some environment variables that can be updated with the information to be stored. There should be one owner, and we'll keep just those credentials.
+- What should we write to the read characteristic? Perhaps we should define different characteristics to post statuses of various things. We could  even post debug messages, not that those are really needed at this point.
+
 ## Setup RPi4:
 For instructions on how to image your micro SD card with Ubuntu Server 22.04, follow this link [HERE](https://ubuntu.com/tutorials/how-to-install-ubuntu-on-your-raspberry-pi#1-overview). To avoid issues, it is recommended that you install the same distro exactly, which would be Ubuntu-Server 22.04.3 LTS. After the system has been installed, boot the image and login with username:```ubuntu``` password:```ubuntu```. You will then be prompted to change you password.
 
