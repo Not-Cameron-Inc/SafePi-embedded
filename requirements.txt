@@ -4,3 +4,4 @@ dbus_next
 cryptography
 requests
 lgpio
+urllib3==1.26.6

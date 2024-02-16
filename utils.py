@@ -8,6 +8,8 @@ import requests
 import lgpio
 import os
 import threading
+import json
+import ssl
 
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
@@ -18,6 +20,81 @@ AES_KEY = b'\x01\x23\x45\x67\x89\xab\xcd\xef\xfe\xdc\xba\x98\x76\x54\x32\x10' \
           b'\x01\x23\x45\x67\x89\xab\xcd\xef\xfe\xdc\xba\x98\x76\x54\x32\x10'
 # Hardcoded IV (16 bytes for AES-CBC)
 IV = b'\x01\x23\x45\x67\x89\xab\xcd\xef\xfe\xdc\xba\x98\x76\x54\x32\x10'
+
+WEBSERVER = "184.72.19.36"
+PORT = 443
+# ANSI escape chars
+GREEN = "\033[32m"
+RED = "\033[31m"
+RESET = "\033[0m"
+cert_path = "../keys/cert-remote.pem"
+door_list = ['Door']
+
+#####################################################################################
+#                                   UTILITIES                                       #
+#####################################################################################
+        
+def internet_on():
+    """ Checks if we are connected to the internet """
+    try:
+        response = requests.get('http://google.com', timeout=1)
+        return response.status_code == 200
+    except requests.RequestException:
+        return False
+    
+def send_request(dest=WEBSERVER, port=PORT, type='GET', path="", payload=""):
+    """ This function allows for PUT request server interation to various paths """
+    headers = {"Content-Type": "application/json"}
+    request = f'https://{dest}:{port}{path}'
+    if type == 'GET':
+        response = requests.get(request, headers=headers, verify=cert_path)
+        data = json.loads(response.text)
+
+        # Navigate through the dictionary to get the value of isLocked
+        is_locked = data["fields"]["isLocked"]["booleanValue"]
+
+    elif type == 'POST':
+        response = requests.post(request, data=payload, headers=headers, verify=cert_path)
+        data = json.loads(response.text)
+    elif type == 'PUT':
+        response = requests.put(request, data=payload, headers=headers, verify=cert_path)
+        data = json.loads(response.text)
+    return data
+
+def status():
+    """ This function prints the status of door1. """
+    while True:
+        try:
+            for door in door_list:
+                data = send_request(path=f'/api/get{door}')
+                if data["fields"]["isLocked"]["booleanValue"]:
+                    locked = f'{GREEN}LOCKED  {RESET}'
+                else:
+                    locked = f'{RED}UNLOCKED{RESET}'
+                print(f'+ {door}: {locked}   {current_time()}', end='\r', flush=True)
+                time.sleep(1)
+        except KeyboardInterrupt as e:
+            print(e)
+            break
+
+def current_time():
+    return str(datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"))
+
+def wait_animation(msg, event):
+    """ Simple animation to be run in a thread """
+    i = 0  # Initialize counter outside the loop
+    while not event.is_set():
+        i = (i % 3) + 1  # Increment counter, reset to 1 after 4
+        dots = '.' * i
+        # Clear line and print the message with dots
+        print(f'\r{" " * (len(msg) + 4)}', end='\r')  # Clear with spaces
+        print(f'\r{msg}{dots}', end='', flush=True)
+        time.sleep(1)
+    print('\r' + ' ' * (len(msg) + 4), end='\r') 
+
+#####################################################################################
+#                                   CRYPTOGRAPHY                                    #
+#####################################################################################
 
 # Encryption function
 def encrypt(plaintext, aes_key, iv):
@@ -49,15 +126,10 @@ def decrypt(ciphertext, aes_key, iv):
     decrypted = unpadder.update(decrypted_padded) + unpadder.finalize()
     return decrypted.decode('utf-8')
 
-def send_request(dest, port, path, payload):
-    """ 
-    This function allows for PUT request server interation to various paths.
-    """
-    headers = {"Content-Type": "application/json"}
-    requests.put(f'https://{dest}:{port}{path}', data=payload, headers=headers)
-
-################################################################################## 
-
+#####################################################################################
+#                               BLE SERVER COMMANDS                                 #
+#####################################################################################
+    
 def handle_write(message):
     word_list = message.split()
     command = word_list[0]
@@ -120,28 +192,9 @@ def shutdown():
     except Exception as e:
         print(f"Error occurred while shutting down: {e}")
 
-################################################################################## 
-
-def internet_on():
-    try:
-        response = requests.get('http://google.com', timeout=1)
-        return response.status_code == 200
-    except requests.RequestException:
-        return False
-
-def wait_animation(msg, event):
-    """Simple animation to be run in a thread"""
-    i = 0  # Initialize counter outside the loop
-    while not event.is_set():
-        i = (i % 3) + 1  # Increment counter, reset to 1 after 4
-        dots = '.' * i
-        # Clear line and print the message with dots
-        print(f'\r{" " * (len(msg) + 4)}', end='\r')  # Clear with spaces
-        print(f'\r{msg}{dots}', end='', flush=True)
-        time.sleep(1)
-    print('\r' + ' ' * (len(msg) + 4), end='\r') 
-
-################################################################################## 
+#####################################################################################
+#                                   GPIO CONTROLS                                   #
+#####################################################################################
     
 def setup_gpio(pin):
     """ Function to initialize the GPIO pin """
@@ -176,12 +229,9 @@ def indicator_blinking():
 
 
 if __name__ == "__main__":
-    plaintext = 'Hey there!'
-    enc_text = encrypt(plaintext, AES_KEY, IV)
-    print("Encrypted:", enc_text)
-    dec_text = decrypt(enc_text, AES_KEY, IV)
-    print("Decrypted:", dec_text)
     # example of data and time we will be using
-    print(f'Current date and time: {str(datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"))}')
+    print(f'Current date and time: {current_time()}')
 
-    print(f'Connected: {internet_on()}')    
+    print(f'Connected: {internet_on()}')
+    # send_request(path='/api/postDoor/true')
+    status()
