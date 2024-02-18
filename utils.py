@@ -15,6 +15,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
 
+
 # Hardcoded AES key (32 bytes for AES-256)
 AES_KEY = b'\x01\x23\x45\x67\x89\xab\xcd\xef\xfe\xdc\xba\x98\x76\x54\x32\x10' \
           b'\x01\x23\x45\x67\x89\xab\xcd\xef\xfe\xdc\xba\x98\x76\x54\x32\x10'
@@ -111,20 +112,32 @@ def encrypt(plaintext, aes_key, iv):
     encrypted = encryptor.update(plaintext_padded) + encryptor.finalize()
     return encrypted
 
-# Decryption function
+
 def decrypt(ciphertext, aes_key, iv):
     """
-    This function dectyps using the AES CBC mode. It return the decoded string.
+    This function decrypts using the AES CBC mode. It returns the decoded string.
     """
+    # Check if the ciphertext length is valid
+    block_size = algorithms.AES.block_size // 8  # AES block size in bytes
+    if len(ciphertext) % block_size != 0:
+        raise ValueError("Invalid ciphertext length")
+
+    # AES key and IV
     aes_key = AES_KEY
     iv = IV
+
+    # Perform decryption
     cipher = Cipher(algorithms.AES(aes_key), modes.CBC(iv), backend=default_backend())
     decryptor = cipher.decryptor()
     decrypted_padded = decryptor.update(ciphertext) + decryptor.finalize()
-    
+
+    # Unpad the decrypted data
     unpadder = padding.PKCS7(algorithms.AES.block_size).unpadder()
     decrypted = unpadder.update(decrypted_padded) + unpadder.finalize()
+
+    # Decode the decrypted data
     return decrypted.decode('utf-8')
+
 
 #####################################################################################
 #                               BLE SERVER COMMANDS                                 #

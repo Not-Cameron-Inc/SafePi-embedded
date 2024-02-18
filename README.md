@@ -8,9 +8,18 @@ TODO:
 - What should we write to the read characteristic? Perhaps we should define different characteristics to post statuses of various things. We could  even post debug messages, not that those are really needed at this point.
 
 ## Setup RPi4:
-For instructions on how to image your micro SD card with Ubuntu Server 22.04, follow this link [HERE](https://ubuntu.com/tutorials/how-to-install-ubuntu-on-your-raspberry-pi#1-overview). To avoid issues, it is recommended that you install the same distro exactly, which would be Ubuntu-Server 22.04.3 LTS. After the system has been installed, boot the image and login with username:```ubuntu``` password:```ubuntu```. You will then be prompted to change you password.
+For instructions on how to image your micro SD card with Ubuntu Server 23.10, follow this link [HERE](https://ubuntu.com/tutorials/how-to-install-ubuntu-on-your-raspberry-pi#1-overview). 
+
+IMPORTANT: Before you put the burn the image onto the sd card, you will be prompted to use custom setting. You should consider setting up you wifi, local host name, and ssh with password auth enabled. This will allow you to completely skip the wifi and ssh sections below. You would then ssh in with this form of command (assuming hostname is SafePi):
+```
+ssh <usernam>@safepi.local
+```
+
+ After the system has been installed, boot the image and login with username:```ubuntu``` password:```ubuntu```. You will then be prompted to change you password.
 
 ### Wifi
+Before we begin, consider setting up
+
 If you have access to an ethernet connection, you can use that for now, but you will have to setup wifi eventually. If you would like to do this later, skip to to the *General Setup* section below.
 
  A yaml config was generated in the ```/etc/netplan/``` dir under various names depending on your system (mine was "50-cloud-init.yaml"). You might want to make a copy of this config before you edit it, but before you do this, you'll need the name of your wireless interface. Usually it's "wlan0", but this can be different, so check by running:
@@ -102,7 +111,7 @@ reboot
 
 When the RPi boots back up, go ahead and install some necessary libraries:
 ```
-sudo apt install python3-lgpio pip python3.10-venv
+sudo apt install pip python3-venv
 ```
 Now that pip is installed, clone the repo in whatever directory seems fit. I chose the home folder because that is the purpose of the device, and that is easier to deal with:
 ```
@@ -129,16 +138,16 @@ This step is crucial for allowing our scripts to run on startup, and to make the
 ```
 sudo nano /etc/systemd/system/safepi.service
 ```
-We will assume that the user is "ubuntu" as that was the default one, but if yours is different, then you'll have to change the paths in the below code to match. Paste this code in:
+We will assume that the user is "safepi" as that was the default one, but if yours is different, then you'll have to change the paths in the below code to match. Paste this code in:
 ```
 [Unit]
 Description=Startup for SafePi BLE broadcast server.
 
 [Service]
-WorkingDirectory=/home/ubuntu/SafePi-embedded
-Environment="PATH=/home/ubuntu/SafePi-embedded/venv/bin"
+WorkingDirectory=/home/safepi/SafePi-embedded
+Environment="PATH=/home/safepi/SafePi-embedded/venv/bin"
 ExecStartPre=/bin/sleep 10
-ExecStart=/home/ubuntu/SafePi-embedded/venv/bin/python3 safepi.py
+ExecStart=/home/safepi/SafePi-embedded/venv/bin/python3 safepi.py
 
 [Install]
 WantedBy=multi-user.target
@@ -154,7 +163,6 @@ The last "status" command should return a green active indicator with more text.
 Run this command to monitor the service in real-time:
 ```
 sudo journalctl -u safepi -f
-
 ```
 
 ## Diagrams
