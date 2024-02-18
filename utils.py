@@ -120,8 +120,8 @@ def decrypt(ciphertext, aes_key, iv):
     # Check if the ciphertext length is valid
     block_size = algorithms.AES.block_size // 8  # AES block size in bytes
     if len(ciphertext) % block_size != 0:
-        result = "Incorrect length"
-        raise ValueError("Invalid ciphertext length")
+        result = "Incorrect decryption format."
+        # raise ValueError("Invalid ciphertext length")
     else:
         # AES key and IV
         aes_key = AES_KEY
@@ -136,7 +136,7 @@ def decrypt(ciphertext, aes_key, iv):
         unpadder = padding.PKCS7(algorithms.AES.block_size).unpadder()
         decrypted = unpadder.update(decrypted_padded) + unpadder.finalize()
         result = decrypted.decode('utf-8')
-
+    
     # Decode the decrypted data
     return result
 
