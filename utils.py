@@ -249,4 +249,10 @@ if __name__ == "__main__":
 
     print(f'Connected: {internet_on()}')
     # send_request(path='/api/postDoor/true')
-    status()
+    # status()
+    plaintext = "Hello from server"
+    encrypted_text = encrypt(plaintext, AES_KEY, IV)
+    print(f"Encrypted: {encrypted_text}")
+
+    decrypted_text = decrypt(encrypted_text, AES_KEY, IV)
+    print(f"Decrypted: {decrypted_text}")
