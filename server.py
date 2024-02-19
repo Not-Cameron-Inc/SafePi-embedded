@@ -16,6 +16,9 @@ def read_request(characteristic: BlessGATTCharacteristic, **kwargs) -> bytearray
     # For example, return a simple string converted to bytes"
     message = "Hello from server"
     encrypted_message = encrypt(message, '', '')
+
+    client_info = kwargs.get('client_identifier', 'Unknown')  # Adjust based on actual available data
+    logger.debug(f"Read request from {kwargs} for {characteristic.uuid}: {encrypted_message}")
     logger.debug(f"Reading {characteristic.uuid}: {encrypted_message}")
     return bytearray(encrypted_message)
 

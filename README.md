@@ -174,6 +174,9 @@ This a sequence diagram for the initial device provisioning process:
 This is a chart of the encryption scheme for each connection:
 ![Encryption Scheme](figures/encryption-diagram.png)
 
+### Android Application Flow Chart:
+This shows the execution flow of the android app from the user perspective:
+![Android Application Flow](figures/Android-App-Flow.png)
 
 ## References:
 - [Setup wifi on ubuntu server](https://askubuntu.com/questions/1143287/how-to-setup-of-raspberry-pi-3-onboard-wifi-for-ubuntu-server-with-netplan/1143594#1143594?newreg=4bbf1c68180f4c128cc5125a64917a85)

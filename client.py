@@ -18,7 +18,10 @@ def run_client(args):
         animation_thread.start()        
 
         # Find the SafePi device
-        device = await BleakScanner.find_device_by_name(name='SafePi', timeout=20.0)
+        device = await BleakScanner.find_device_by_name(name='SafePi', timeout=10.0)
+        if not device:
+            device = await BleakScanner.find_device_by_address(name='d8:3a:dd:b6:7c:40', timeout=10.0)
+            print('Found device by MAC')
 
         # joind the animation thread
         stop_event.set()
