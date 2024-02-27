@@ -269,7 +269,15 @@ if __name__ == "__main__":
     print(f'Current date and time: {current_time()}')
 
     print(f'Connected: {internet_on()}')
-    # send_request(path='/api/postDoor/true')
+
+    emailRequestBody = \
+        {
+            "email": "test@test.com",
+            "password": "eb233b36632dc77950be4fc9e96d62f1c097d5dbd529ae68a2b314710791ca8e",
+            "isLocked": "true"
+        }  
+    send_request(type="POST", path='api/postDoor', payload=emailRequestBody)
+    print(send_request(path='api/getDoor'))
 
     # status()
     
@@ -279,4 +287,4 @@ if __name__ == "__main__":
     # decrypted_text = decrypt(encrypted_text, AES_KEY, IV)
     # print(f"Decrypted: {decrypted_text}")
 
-    create_user("test@test.com", "anythingiwant")
+    # create_user("test@test.com", "anythingiwant")
