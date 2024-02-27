@@ -10,6 +10,7 @@ import os
 import threading
 import json
 import ssl
+import hashlib
 
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
@@ -22,13 +23,12 @@ AES_KEY = b'\x01\x23\x45\x67\x89\xab\xcd\xef\xfe\xdc\xba\x98\x76\x54\x32\x10' \
 # Hardcoded IV (16 bytes for AES-CBC)
 IV = b'\x01\x23\x45\x67\x89\xab\xcd\xef\xfe\xdc\xba\x98\x76\x54\x32\x10'
 
-WEBSERVER = "184.72.19.36"
+WEBSERVER = "www.safepi.org"
 PORT = 443
 # ANSI escape chars
 GREEN = "\033[32m"
 RED = "\033[31m"
 RESET = "\033[0m"
-cert_path = "../keys/cert-remote.pem"
 door_list = ['Door']
 
 #####################################################################################
@@ -43,31 +43,52 @@ def internet_on():
     except requests.RequestException:
         return False
     
-def send_request(dest=WEBSERVER, port=PORT, type='GET', path="", payload=""):
+def send_request(dest=WEBSERVER, port=PORT, type='GET', path="", payload=None):
     """ This function allows for PUT request server interation to various paths """
-    headers = {"Content-Type": "application/json"}
-    request = f'https://{dest}:{port}{path}'
-    if type == 'GET':
-        response = requests.get(request, headers=headers, verify=cert_path)
-        data = json.loads(response.text)
+    headers = {
+        "Content-Type": "application/json"
+    }    
+    url = f'https://{dest}/{path}'
+    try:
+        if type == 'GET':
+            response = requests.get(url, headers=headers)
+        elif type == 'POST':
+            response = requests.post(url, json=payload, headers=headers)
+        elif type == 'PUT':
+            response = requests.put(url, json=payload, headers=headers)
+        
+        response.raise_for_status()
+        data = response.text
+    except requests.exceptions.RequestException as e:
+        print(f"Request failed: {e}")
+        data = None
 
-        # Navigate through the dictionary to get the value of isLocked
-        is_locked = data["fields"]["isLocked"]["booleanValue"]
-
-    elif type == 'POST':
-        response = requests.post(request, data=payload, headers=headers, verify=cert_path)
-        data = json.loads(response.text)
-    elif type == 'PUT':
-        response = requests.put(request, data=payload, headers=headers, verify=cert_path)
-        data = json.loads(response.text)
     return data
+
+def create_user(email, password):
+    password_encoded = password.encode('utf-8')
+    hashed_password = hashlib.sha256(password_encoded)
+    print(hashed_password.hexdigest())
+    data = {
+        "email": email,
+        "password": hashed_password.hexdigest()
+    }
+
+    response = send_request(type='POST', path='create_user', payload=data)
+    print(response)
+    if "created user" in response:
+        return True
+    else:
+        return False
 
 def status():
     """ This function prints the status of door1. """
     while True:
         try:
             for door in door_list:
-                data = send_request(path=f'/api/get{door}')
+                response = send_request(path=f'api/get{door}')
+                print(response)
+                data = json.loads(response)
                 if data["fields"]["isLocked"]["booleanValue"]:
                     locked = f'{GREEN}LOCKED  {RESET}'
                 else:
@@ -249,10 +270,13 @@ if __name__ == "__main__":
 
     print(f'Connected: {internet_on()}')
     # send_request(path='/api/postDoor/true')
-    # status()
-    plaintext = "Hello from server"
-    encrypted_text = encrypt(plaintext, AES_KEY, IV)
-    print(f"Encrypted: {encrypted_text}")
 
-    decrypted_text = decrypt(encrypted_text, AES_KEY, IV)
-    print(f"Decrypted: {decrypted_text}")
+    # status()
+    
+    # plaintext = "Hello from server"
+    # encrypted_text = encrypt(plaintext, AES_KEY, IV)
+    # print(f"Encrypted: {encrypted_text}")
+    # decrypted_text = decrypt(encrypted_text, AES_KEY, IV)
+    # print(f"Decrypted: {decrypted_text}")
+
+    create_user("test@test.com", "anythingiwant")
