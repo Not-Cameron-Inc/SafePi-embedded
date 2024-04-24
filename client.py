@@ -60,10 +60,11 @@ def run_client(args):
                             await wifi_cmd(client, shell_args)
                         if command == 'read':
                             await read_cmd(client)
-                        if command == 'token':
+                        if command == 'provision':
                             if len(shell_args) == 1:
                                 shell_args.append(input('Enter token:'))
-                            await token_cmd(client, shell_args)
+                                shell_args.append(input('Enter identifier:'))
+                            await provision_cmd(client, shell_args)
                         if command == 'reboot':
                             await reboot_cmd(client, shell_args)
                         if command == 'shutdown':
@@ -80,7 +81,7 @@ def run_client(args):
                                     "read                      -> Read from device\n" \
                                     "write <String to write>   -> Writes the string\n" \
                                     "wifi <SSID> <PASSWORD>    -> Sign device onto network\n" \
-                                    "token <TOKEN>             -> Write token to authorize device\n" \
+                                    "provision <TOKEN>         -> Write token to authorize device\n" \
                                     "reboot                    -> Reboots the device\n"
                             print(menu)
                         if command == 'exit' or command == 'quit':
@@ -98,7 +99,7 @@ async def read_cmd(client):
     value = await client.read_gatt_char(CHAR_UUID_READ)
     print(f"Read from characteristic {CHAR_UUID_READ}: {decrypt(value, '', '')}")
 
-async def token_cmd(client, shell_args):
+async def provision_cmd(client, shell_args):
     shell_args.insert(0, 'placehold')
     await write_cmd(client, shell_args)
 

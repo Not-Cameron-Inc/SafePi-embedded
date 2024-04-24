@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 
 import asyncio
+import time
 from utils import *
-from server import run
+from server import run\
 
 # Function to start the BLE server
 async def start_server():
@@ -10,12 +11,12 @@ async def start_server():
     await run(loop)
 
 
+
+
 if __name__ == "__main__":
-    # blink or turn on solid LED to indicate whether network is on.
-    if internet_on():
-        indicator_solid()
-    else:
-        indicator_blinking()
+    # start a thread for device function
+    server_thread = threading.Thread(target=device_functions)
+    server_thread.start()
 
     # turn on the BLE server
     try:

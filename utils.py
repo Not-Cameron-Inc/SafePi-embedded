@@ -11,6 +11,7 @@ import threading
 import json
 import ssl
 import hashlib
+import urllib.parse
 
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
@@ -23,6 +24,10 @@ AES_KEY = b'\x01\x23\x45\x67\x89\xab\xcd\xef\xfe\xdc\xba\x98\x76\x54\x32\x10' \
 # Hardcoded IV (16 bytes for AES-CBC)
 IV = b'\x01\x23\x45\x67\x89\xab\xcd\xef\xfe\xdc\xba\x98\x76\x54\x32\x10'
 
+DEFAULT_HEADER = {"Content-Type": "application/x-www-form-urlencoded"}
+ACCESS_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVF9DVVNUT01fTkNJIn0.eyJpZCI6ImVtYWlsX2F1dGhfZjBoTXV6NlJ6UiIsInR0bCI6MTcxMzk5ODQzOH0.QBuNFb1DwHo-o6_yuvnFMsGjK6Ikr7SxxCNw0GbPX28'
+REFRESH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVF9DVVNUT01fTkNJIn0.eyJpZCI6ImVtYWlsX2F1dGhfZjBoTXV6NlJ6UiIsInR0bCI6MTcxMzk5ODQzOH0.hNhEz8aIIkjUIIaoAEVx7O-azmM4n9aiXoKTfJasoNc'
+
 WEBSERVER = "www.safepi.org"
 PORT = 443
 # ANSI escape chars
@@ -34,7 +39,20 @@ door_list = ['Door']
 #####################################################################################
 #                                   UTILITIES                                       #
 #####################################################################################
-        
+
+def device_functions():
+    while True:
+        if ACCESS_TOKEN != '':
+            update_status()
+        time.sleep(3)
+
+            
+        # blink or turn on solid LED to indicate whether network is on.
+        # if internet_on():
+        #     indicator_solid()
+        # else:
+        #     indicator_blinking()
+
 def internet_on():
     """ Checks if we are connected to the internet """
     try:
@@ -43,61 +61,72 @@ def internet_on():
     except requests.RequestException:
         return False
     
-def send_request(dest=WEBSERVER, port=PORT, type='GET', path="", payload=None):
-    """ This function allows for PUT request server interation to various paths """
-    headers = {
-        "Content-Type": "application/json"
-    }    
-    url = f'https://{dest}/{path}'
+def send_request(dest='www.safepi.org', port=443, type='POST', path="", payload=None, headers=DEFAULT_HEADER, token=""):
+    """ This function allows requests to the server """
+    url = f'https://{dest}:{port}/{path}'
+
+    # Ensure a new dictionary is used for headers to avoid modifying the default
+    headers = dict(headers)
+
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+
+    # Prepare data based on the Content-Type
+    if headers.get("Content-Type") == "application/json":
+        data = json.dumps(payload) if payload else '{}'
+    else:
+        # URL-encode the payload if the content type is 'application/x-www-form-urlencoded'
+        data = urllib.parse.urlencode(payload) if isinstance(payload, dict) else payload
+
+    # print("\nSending data:", url, headers, data)
+
     try:
+        # Select the HTTP method and send the request
         if type == 'GET':
             response = requests.get(url, headers=headers)
         elif type == 'POST':
-            response = requests.post(url, json=payload, headers=headers)
+            response = requests.post(url, data=data, headers=headers)
         elif type == 'PUT':
-            response = requests.put(url, json=payload, headers=headers)
-        
+            response = requests.put(url, data=data, headers=headers)
+
+        # Check the response and raise for bad status
         response.raise_for_status()
-        data = response.text
+
+        # Return the JSON response
+        return response
     except requests.exceptions.RequestException as e:
         print(f"Request failed: {e}")
-        data = None
+        return {"error": "failed request", "message": str(e)}
 
-    return data
-
-def create_user(email, password):
-    password_encoded = password.encode('utf-8')
-    hashed_password = hashlib.sha256(password_encoded)
-    print(hashed_password.hexdigest())
-    data = {
-        "email": email,
-        "password": hashed_password.hexdigest()
+def update_status():
+    global ACCESS_TOKEN
+    global REFRESH_TOKEN
+    locked = read_lock(1)
+    payload = {
+        'isLocked': locked,
+        'access_token': ACCESS_TOKEN,
+        'refresh_token': REFRESH_TOKEN
     }
 
-    response = send_request(type='POST', path='create_user', payload=data)
-    print(response)
-    if "created user" in response:
-        return True
-    else:
-        return False
+    headers = {
+        'Content-Type': 'application/json'
+    }
 
-def status():
-    """ This function prints the status of door1. """
-    while True:
-        try:
-            for door in door_list:
-                response = send_request(path=f'api/get{door}')
-                print(response)
-                data = json.loads(response)
-                if data["fields"]["isLocked"]["booleanValue"]:
-                    locked = f'{GREEN}LOCKED  {RESET}'
-                else:
-                    locked = f'{RED}UNLOCKED{RESET}'
-                print(f'+ {door}: {locked}   {current_time()}', end='\r', flush=True)
-                time.sleep(1)
-        except KeyboardInterrupt as e:
-            print(e)
-            break
+    response = send_request(
+        port=443,
+        type='POST',
+        path='api/postDoor',
+        payload=payload,
+        headers=headers
+    )
+    print(response.text)
+    if 'code' in response.text:
+        json_response = response.json()
+        code = json_response['code']
+
+        if code == 3:
+            ACCESS_TOKEN = json_response['access_token']
+            REFRESH_TOKEN = json_response['refresh_token']
 
 def current_time():
     return str(datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"))
@@ -132,7 +161,6 @@ def encrypt(plaintext, aes_key, iv):
     encryptor = cipher.encryptor()
     encrypted = encryptor.update(plaintext_padded) + encryptor.finalize()
     return encrypted
-
 
 def decrypt(ciphertext, aes_key, iv):
     """
@@ -172,8 +200,8 @@ def handle_write(message):
     if command == 'wifi' and len(word_list) > 2:
         flag = wifi_signin(word_list[1], word_list[2])
         print(f'Wifi setup: {flag}')
-    elif command == 'token':
-        send_token(word_list[1])
+    elif command == 'provision':
+        provision(word_list[1], word_list[2])
     elif command == 'reboot':
         reboot()
     elif command == 'shutdown':
@@ -212,9 +240,6 @@ network:
         return False
     finally:
         subprocess.run(["/bin/rm", temp_path], check=False)
-
-def send_token(token):
-    return True
 
 def reboot():
     try:
@@ -263,28 +288,27 @@ def indicator_blinking():
         lgpio.gpio_write(handle, LED_PIN, 0)  # Ensure LED is turned off on exit
         lgpio.gpiochip_close(handle)  # Release the GPIO pin
 
+def read_lock(num):
+    return True
 
 if __name__ == "__main__":
     # example of data and time we will be using
-    print(f'Current date and time: {current_time()}')
+    # print(f'Current date and time: {current_time()}')
 
-    print(f'Connected: {internet_on()}')
+    # print(f'Connected: {internet_on()}')
 
-    emailRequestBody = \
-        {
-            "email": "test@test.com",
-            "password": "eb233b36632dc77950be4fc9e96d62f1c097d5dbd529ae68a2b314710791ca8e",
-            "isLocked": "true"
-        }  
-    send_request(type="POST", path='api/postDoor', payload=emailRequestBody)
-    print(send_request(path='api/getDoor'))
+    # payload = {'email': 'test@test.com'}
+    # token = 'bcabbf6536edd2ac6043f8d198d91ffca06ad70ea9c01a61d9af54c8336ab870'
+    # response = send_request(payload=payload, path='provision_pi', token=token)
+    # print(response)
+    # access_token = response['access_token']
+    # refresh_token = response['refresh_token']
+    # print(f'A: {access_token}\nR: {refresh_token}')
 
-    # status()
-    
+    device_functions()
+
     # plaintext = "Hello from server"
     # encrypted_text = encrypt(plaintext, AES_KEY, IV)
     # print(f"Encrypted: {encrypted_text}")
     # decrypted_text = decrypt(encrypted_text, AES_KEY, IV)
     # print(f"Decrypted: {decrypted_text}")
-
-    # create_user("test@test.com", "anythingiwant")

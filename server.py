@@ -58,10 +58,14 @@ async def run(loop):
     await server.start()
     logger.info("Server is now advertising.")
 
+    # start up the device functions
+    initiate_device_functions()
+
     # Keep the server running
     while True:
         await asyncio.sleep(1)
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(run(loop))
+
 

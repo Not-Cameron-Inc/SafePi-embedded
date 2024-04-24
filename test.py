@@ -1,21 +1,23 @@
 import requests
 
-# URL of the endpoint
-url = "https://www.safepi.org/create_user"
+# Define the URL of the endpoint
+url = 'https://safepi.org/token'
 
-# JSON data to be sent in the request body
-data = {
-    "email": "test@test.com",
-    "password": "TheWorstPaor1209"
-}
-
-# Headers specifying content type
+# Define the headers
 headers = {
-    "Content-Type": "application/json"
+    'Authorization': 'Basic MTI0NTQyNDQyMzI3LXIwNTYwYjVldmVxYW9hczM2NWg5ZnNicDVxaDJuMTdoLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tOkdPQ1NQWC00RUl6NXo0dzdhQlRiRFpwWDQxVHM0UnVRRHE1',
+    'Content-Type': 'application/x-www-form-urlencoded'
 }
 
-# Sending POST request
-response = requests.post(url, json=data, headers=headers, verify="../keys/cert-remote.pem")
+# Define the data
+data = {
+    'grant_type': 'client_credentials',
+    'scope': 'read'
+}
 
-# Printing the response
+# Make the POST request
+response = requests.post(url, headers=headers, data=data)
+
+# Print the response content
+print("Response:")
 print(response.text)
