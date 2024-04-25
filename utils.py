@@ -8,6 +8,7 @@ import requests
 import lgpio
 import os
 import logging
+import threading
 import json
 import ssl
 import hashlib
@@ -65,8 +66,10 @@ def internet_on():
     """ Checks if we are connected to the internet """
     try:
         response = requests.get('http://google.com', timeout=1)
+        logging.debug("Connected")
         return response.status_code == 200
     except requests.RequestException:
+        logging.debug("Not Connected")
         return False
 
 def update_connection_status(status):
@@ -140,15 +143,16 @@ def update_status():
         headers=headers
     )
 
-    # print(response.text)
     if not isinstance(response, dict):
         if 'code' in response.text:
             json_response = response.json()
             code = json_response['code']
 
             if code == 3:
+                logging.debug(f"Updating Tokens:\n{ACCESS_TOKEN}{REFRESH_TOKEN}")
                 ACCESS_TOKEN = json_response['access_token']
                 REFRESH_TOKEN = json_response['refresh_token']
+                logging.debug(f"New Tokens:\n{ACCESS_TOKEN}{REFRESH_TOKEN}")
 
 def current_time():
     return str(datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"))
