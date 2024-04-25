@@ -358,16 +358,16 @@ def read_lock(door):
         # Interpret the result
         if is_connected == 1:
             print("The pins are connected.")
-            return True
+            flag = True
         else:
             print("The pins are not connected.")
-            return False
+            flag = False
     finally:
         # Clean up, release the pins
         lgpio.gpio_free(handle, output_pin)
         lgpio.gpio_free(handle, input_pin)
         lgpio.gpiochip_close(handle)
-        return False
+        return flag
     
 
 if __name__ == "__main__":
