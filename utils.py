@@ -317,7 +317,7 @@ def indicator_solid():
     finally:
         lgpio.gpio_write(handle, LED_PIN, 0)
         lgpio.gpiochip_close(handle)
-        free_gpio_pin(handle, LED_PIN)
+        # free_gpio_pin(handle, LED_PIN)
 
 def indicator_blinking():
     LED_PIN = 14
@@ -334,7 +334,7 @@ def indicator_blinking():
     finally:
         lgpio.gpio_write(handle, LED_PIN, 0)
         lgpio.gpiochip_close(handle)
-        free_gpio_pin(handle, LED_PIN)
+        # free_gpio_pin(handle, LED_PIN)
 
 
 def read_lock(door):
