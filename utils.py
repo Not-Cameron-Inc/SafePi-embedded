@@ -316,6 +316,7 @@ def indicator_solid():
         except KeyboardInterrupt:
             lgpio.gpio_write(handle, LED_PIN, 0) 
             lgpio.gpiochip_close(handle)
+            free_gpio_pin(LED_PIN)
 
 def indicator_blinking():
     """ Function that blinks indicator light. Used when network is down. """
@@ -329,8 +330,9 @@ def indicator_blinking():
             lgpio.gpio_write(handle, LED_PIN, 0)  # Turn the LED off
             time.sleep(BLINK_INTERVAL)
     except KeyboardInterrupt:
-        lgpio.gpio_write(handle, LED_PIN, 0)  # Ensure LED is turned off on exit
+        lgpio.gpio_write(handle, LED_PIN, 0)
         lgpio.gpiochip_close(handle) 
+        free_gpio_pin(LED_PIN)
 
 def read_lock(door):
     handle = lgpio.gpiochip_open(0)  
@@ -387,6 +389,12 @@ if __name__ == "__main__":
     # decrypted_text = decrypt(encrypted_text, AES_KEY, IV)
     # print(f"Decrypted: {decrypted_text}")
 
-    read_lock('Door1')
-    indicator_blinking()
+    while True:
+        # Check lock status and update LED indicator accordingly
+        if read_lock('Door1'):
+            print("Lock is connected, turning on solid indicator.")
+            indicator_solid()
+        else:
+            print("Lock is not connected, turning on blinking indicator.")
+            indicator_blinking()
     
