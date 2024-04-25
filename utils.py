@@ -306,33 +306,36 @@ def setup_gpio(pin):
     return handle
 
 def indicator_solid():
-    """ Function that turns on indicator light, indicating wifi is connected """
     LED_PIN = 14
     handle = setup_gpio(LED_PIN)
-    print("trying solid LED")
-    while True:
-        try:
-            lgpio.gpio_write(handle, LED_PIN, 1)
-        except KeyboardInterrupt:
-            lgpio.gpio_write(handle, LED_PIN, 0) 
-            lgpio.gpiochip_close(handle)
-            free_gpio_pin(LED_PIN)
+    print("Solid LED indicator active.")
+    try:
+        lgpio.gpio_write(handle, LED_PIN, 1)  # Keep the LED on
+        time.sleep(INTERVAL)  # Maintain solid light for the interval duration
+    except KeyboardInterrupt:
+        pass
+    finally:
+        lgpio.gpio_write(handle, LED_PIN, 0)
+        lgpio.gpiochip_close(handle)
+        free_gpio_pin(handle, LED_PIN)
 
 def indicator_blinking():
-    """ Function that blinks indicator light. Used when network is down. """
     LED_PIN = 14
     BLINK_INTERVAL = 1
     handle = setup_gpio(LED_PIN)
+    print("Blinking LED indicator active.")
+    start_time = time.time()
     try:
-        while True:
+        while time.time() - start_time < INTERVAL:
             lgpio.gpio_write(handle, LED_PIN, 1)  # Turn the LED on
             time.sleep(BLINK_INTERVAL)
             lgpio.gpio_write(handle, LED_PIN, 0)  # Turn the LED off
             time.sleep(BLINK_INTERVAL)
-    except KeyboardInterrupt:
+    finally:
         lgpio.gpio_write(handle, LED_PIN, 0)
-        lgpio.gpiochip_close(handle) 
-        free_gpio_pin(LED_PIN)
+        lgpio.gpiochip_close(handle)
+        free_gpio_pin(handle, LED_PIN)
+
 
 def read_lock(door):
     handle = lgpio.gpiochip_open(0)  
