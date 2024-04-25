@@ -333,6 +333,27 @@ def indicator_blinking():
         # Do not turn off the LED here, just close the handle
         lgpio.gpiochip_close(handle)
 
+def manage_indicator():
+    stop_blinking_event = threading.Event()  # Event to stop the blinking thread
+    blinking_thread = None
+
+    while True:
+        lock_connected = read_lock('Door1')
+        if lock_connected:
+            if blinking_thread and blinking_thread.is_alive():
+                stop_blinking_event.set()  # Signal the blinking thread to stop
+                blinking_thread.join()  # Wait for the blinking thread to finish
+                print("Lock is connected. LED remains in its natural state.")
+        else:
+            if blinking_thread is None or not blinking_thread.is_alive():
+                stop_blinking_event.clear()  # Clear the event for a fresh start
+                blinking_thread = threading.Thread(target=indicator_blinking, args=(stop_blinking_event,))
+                blinking_thread.start()
+                print("Lock is not connected, turning on blinking indicator.")
+        
+        time.sleep(INTERVAL)  # Sleep for some time before checking again
+
+
 
 
 def read_lock(door):
@@ -390,12 +411,5 @@ if __name__ == "__main__":
     # decrypted_text = decrypt(encrypted_text, AES_KEY, IV)
     # print(f"Decrypted: {decrypted_text}")
     
-    while True:
-        # Check lock status and update LED indicator accordingly
-        if read_lock('Door1'):
-            print("Lock is connected, turning on solid indicator.")
-            # indicator_solid()
-        else:
-            print("Lock is not connected, turning on blinking indicator.")
-            indicator_blinking()
+    threading.Thread(target=manage_indicator).start()
     
