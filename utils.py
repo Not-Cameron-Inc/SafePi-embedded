@@ -128,14 +128,16 @@ def update_status():
         payload=payload,
         headers=headers
     )
+    
     # print(response.text)
-    if 'code' in response.text:
-        json_response = response.json()
-        code = json_response['code']
+    if not isinstance(response, dict):
+        if 'code' in response.text:
+            json_response = response.json()
+            code = json_response['code']
 
-        if code == 3:
-            ACCESS_TOKEN = json_response['access_token']
-            REFRESH_TOKEN = json_response['refresh_token']
+            if code == 3:
+                ACCESS_TOKEN = json_response['access_token']
+                REFRESH_TOKEN = json_response['refresh_token']
 
 def current_time():
     return str(datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"))
