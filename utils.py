@@ -18,7 +18,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
 
-logging.getLogger("requests").setLevel(logging.WARNING)
+# logging.getLogger("requests").setLevel(logging.WARNING)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 
@@ -144,7 +144,6 @@ def update_status():
         payload=payload,
         headers=headers
     )
-    logging.debug(response)
     if not isinstance(response, dict):
         if 'code' in response.text:
             json_response = response.json()
@@ -272,6 +271,8 @@ network:
 def provision(access, refresh):
     ACCESS_TOKEN = access
     REFRESH_TOKEN = refresh
+    logging.debug(f"New Tokens:\n{ACCESS_TOKEN}{REFRESH_TOKEN}")
+
 
 def reboot():
     try:
