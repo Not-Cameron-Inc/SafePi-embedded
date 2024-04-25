@@ -60,18 +60,17 @@ def device_functions():
         time.sleep(INTERVAL)
 
         # blink or turn on solid LED to indicate whether network is on.
-        if internet_on():
-            indicator_solid()
-        else:
-            indicator_blinking()
+        # threading.Thread(target=manage_indicator).start()
+
 
 def internet_on():
     """ Checks if we are connected to the internet """
-    try:
-        response = requests.get('http://google.com', timeout=1)
-        return response.status_code == 200
-    except requests.RequestException:
-        return False
+    # try:
+    #     response = requests.get('http://google.com', timeout=1)
+    #     return response.status_code == 200
+    # except requests.RequestException:
+    #     return False
+    return False
 
 def update_connection_status(status):
     status_str = f"connected:{status}"
@@ -125,7 +124,7 @@ def send_request(dest='www.safepi.org', port=443, type='POST', path="", payload=
 def update_status():
     global ACCESS_TOKEN
     global REFRESH_TOKEN
-    locked = read_lock(1)
+    locked = read_lock("Door1")
     payload = {
         'isLocked': locked,
         'access_token': ACCESS_TOKEN,
@@ -305,19 +304,6 @@ def setup_gpio(pin):
     lgpio.gpio_claim_output(handle, pin)
     return handle
 
-def indicator_solid():
-    LED_PIN = 14
-    handle = setup_gpio(LED_PIN)
-    # print("Solid LED indicator active.")
-    try:
-        lgpio.gpio_write(handle, LED_PIN, 1)  
-        time.sleep(INTERVAL)  
-    except KeyboardInterrupt:
-        pass
-    finally:
-        lgpio.gpio_write(handle, LED_PIN, 0)
-        lgpio.gpiochip_close(handle)
-
 def indicator_blinking(stop_event):
     LED_PIN = 14
     BLINK_INTERVAL = 0.5  
@@ -336,21 +322,17 @@ def manage_indicator():
     blinking_thread = None
 
     while True:
-        lock_connected = read_lock('Door1')
-        if lock_connected:
+        connected = internet_on()
+        if connected:
             if blinking_thread and blinking_thread.is_alive():
-                stop_blinking_event.set()  # Signal the blinking thread to stop
-                blinking_thread.join()  # Wait for the blinking thread to finish
-                print("Lock is connected. LED remains in its natural state.")
+                stop_blinking_event.set() 
+                blinking_thread.join() 
         else:
             if blinking_thread is None or not blinking_thread.is_alive():
                 stop_blinking_event.clear()  # Clear the event for a fresh start
                 blinking_thread = threading.Thread(target=indicator_blinking, args=(stop_blinking_event,))
-                blinking_thread.start()
-                print("Lock is not connected, turning on blinking indicator.")
-        
-        time.sleep(INTERVAL)  # Sleep for some time before checking again
-
+                blinking_thread.start()        
+        time.sleep(INTERVAL)  
 
 def read_lock(door):
     handle = lgpio.gpiochip_open(0)  
