@@ -68,10 +68,8 @@ def internet_on():
     """ Checks if we are connected to the internet """
     try:
         response = requests.get('http://google.com', timeout=1)
-        logging.debug("Connected")
         return response.status_code == 200
     except requests.RequestException:
-        logging.debug("Not Connected")
         return False
 
 def update_connection_status(status):
@@ -271,7 +269,7 @@ network:
 def provision(access, refresh):
     ACCESS_TOKEN = access
     REFRESH_TOKEN = refresh
-    logging.debug(f"New Tokens:\n{ACCESS_TOKEN}{REFRESH_TOKEN}")
+    logging.debug(f"ACCESS: {ACCESS_TOKEN}\nREFRESH: {REFRESH_TOKEN}")
 
 
 def reboot():
