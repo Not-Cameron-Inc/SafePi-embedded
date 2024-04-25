@@ -321,7 +321,8 @@ def manage_indicator():
     blinking_thread = None
 
     while True:
-        connected = internet_on()
+        # connected = internet_on()
+        connected = read_lock('Door1')
         if connected:
             if blinking_thread and blinking_thread.is_alive():
                 stop_blinking_event.set() 
@@ -353,10 +354,10 @@ def read_lock(door):
         
         # Interpret the result
         if is_connected == 1:
-            print("The pins are connected.")
+            print("Door1 is LOCKED")
             flag = True
         else:
-            print("The pins are not connected.")
+            print("Door1 is UNLOCKED")
             flag = False
     finally:
         # Clean up, release the pins
