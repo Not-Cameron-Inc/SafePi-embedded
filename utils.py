@@ -394,7 +394,7 @@ if __name__ == "__main__":
         # Check lock status and update LED indicator accordingly
         if read_lock('Door1'):
             print("Lock is connected, turning on solid indicator.")
-            indicator_solid()
+            # indicator_solid()
         else:
             print("Lock is not connected, turning on blinking indicator.")
             indicator_blinking()
