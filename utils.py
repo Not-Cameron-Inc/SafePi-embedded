@@ -290,11 +290,12 @@ def shutdown():
 #####################################################################################
 
 def free_gpio_pin(handle, pin):
-    """ Manually free a GPIO pin. """
+    """ Manually free a GPIO pin, ignore if not allocated. """
     try:
         lgpio.gpio_free(handle, pin)
     except lgpio.error as e:
-        print(f"Failed to free pin: {e}")
+        if str(e) != "GPIO not allocated":
+            print(f"Failed to free pin: {e}")
 
 def setup_gpio(pin):
     """ Set up GPIO pin as output. """
