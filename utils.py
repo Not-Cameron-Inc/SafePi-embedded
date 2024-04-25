@@ -319,8 +319,25 @@ def indicator_blinking():
         lgpio.gpio_write(handle, LED_PIN, 0)  # Ensure LED is turned off on exit
         lgpio.gpiochip_close(handle)  # Release the GPIO pin
 
-def read_lock(num):
-    return True
+def read_lock(handle, output_pin, input_pin):
+    # Set the output pin
+    lgpio.gpio_claim_output(handle, output_pin)
+    # Set the input pin
+    lgpio.gpio_claim_input(handle, input_pin)
+    
+    # Set output pin high
+    lgpio.gpio_write(handle, output_pin, 1)
+    # Give a little time for the state to settle
+    time.sleep(0.1)
+    
+    # Read the input pin
+    is_connected = lgpio.gpio_read(handle, input_pin)
+    
+    # Interpret the result
+    if is_connected == 1:
+        print("The pins are connected.")
+    else:
+        print("The pins are not connected.")
 
 if __name__ == "__main__":
     # example of data and time we will be using
@@ -336,10 +353,22 @@ if __name__ == "__main__":
     # refresh_token = response['refresh_token']
     # print(f'A: {access_token}\nR: {refresh_token}')
 
-    device_functions()
+    # device_functions()
 
     # plaintext = "Hello from server"
     # encrypted_text = encrypt(plaintext, AES_KEY, IV)
     # print(f"Encrypted: {encrypted_text}")
     # decrypted_text = decrypt(encrypted_text, AES_KEY, IV)
     # print(f"Decrypted: {decrypted_text}")
+
+    handle = lgpio.gpiochip_open(0)  
+    output_pin = 17  # GPIO 17 as output, change as needed
+    input_pin = 27   # GPIO 27 as input, change as needed
+
+    try:
+        read_lock(handle, output_pin, input_pin)
+    finally:
+        # Clean up, release the pins
+        lgpio.gpio_free(handle, output_pin)
+        lgpio.gpio_free(handle, input_pin)
+        lgpio.gpiochip_close(handle)
