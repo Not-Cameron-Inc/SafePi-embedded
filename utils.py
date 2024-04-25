@@ -148,10 +148,9 @@ def update_status():
             code = json_response['code']
 
             if code == 3:
-                logging.debug(f"Updating Tokens:\n{ACCESS_TOKEN}{REFRESH_TOKEN}")
+                logging.debug(f"Updating Tokens")
                 ACCESS_TOKEN = json_response['access_token']
                 REFRESH_TOKEN = json_response['refresh_token']
-                logging.debug(f"New Tokens:\n{ACCESS_TOKEN}{REFRESH_TOKEN}")
 
 def current_time():
     return str(datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S"))

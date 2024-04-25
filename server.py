@@ -19,7 +19,7 @@ def read_request(characteristic: BlessGATTCharacteristic, **kwargs) -> bytearray
     return bytearray(encrypted_message)
 
 def write_request(characteristic: BlessGATTCharacteristic, value: Any, **kwargs):
-    logger.debug(f"Write request to {characteristic.uuid}: {value}")
+    # logger.debug(f"Write request to {characteristic.uuid}: {value}")
     # log the decrypted write
     message = decrypt(value, AES_KEY, IV)
     logger.debug(f'Decrypted: {message}')
