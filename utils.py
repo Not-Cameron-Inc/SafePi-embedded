@@ -388,5 +388,5 @@ if __name__ == "__main__":
     # print(f"Decrypted: {decrypted_text}")
 
     read_lock('Door1')
-    indicator_solid()
+    indicator_blinking()
     
