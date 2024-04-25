@@ -28,7 +28,6 @@ AES_KEY = b'\x01\x23\x45\x67\x89\xab\xcd\xef\xfe\xdc\xba\x98\x76\x54\x32\x10' \
 # Hardcoded IV (16 bytes for AES-CBC)
 IV = b'\x01\x23\x45\x67\x89\xab\xcd\xef\xfe\xdc\xba\x98\x76\x54\x32\x10'
 INTERVAL = 5
-solid_indicator_on = False
 
 DEFAULT_HEADER = {"Content-Type": "application/x-www-form-urlencoded"}
 ACCESS_TOKEN = ''
@@ -307,22 +306,17 @@ def setup_gpio(pin):
     return handle
 
 def indicator_solid():
-    global solid_indicator_on
-    if not solid_indicator_on: 
-        LED_PIN = 14
-        handle = setup_gpio(LED_PIN)
-        print("Solid LED indicator active.")
-        lgpio.gpio_write(handle, LED_PIN, 1)
-        solid_indicator_on = True
-        return handle 
-
-def turn_off_solid_indicator(handle):
-    global solid_indicator_on
     LED_PIN = 14
-    if solid_indicator_on:
-        lgpio.gpio_write(handle, LED_PIN, 0) 
+    handle = setup_gpio(LED_PIN)
+    # print("Solid LED indicator active.")
+    try:
+        lgpio.gpio_write(handle, LED_PIN, 1)  
+        time.sleep(INTERVAL)  
+    except KeyboardInterrupt:
+        pass
+    finally:
+        lgpio.gpio_write(handle, LED_PIN, 0)
         lgpio.gpiochip_close(handle)
-        solid_indicator_on = False
 
 def indicator_blinking():
     LED_PIN = 14
@@ -395,13 +389,13 @@ if __name__ == "__main__":
     # print(f"Encrypted: {encrypted_text}")
     # decrypted_text = decrypt(encrypted_text, AES_KEY, IV)
     # print(f"Decrypted: {decrypted_text}")
-
+    
     while True:
-        if read_lock("Door1"):
-            if not solid_indicator_on:
-                handle = indicator_solid()
+        # Check lock status and update LED indicator accordingly
+        if read_lock('Door1'):
+            print("Lock is connected, turning on solid indicator.")
+            indicator_solid()
         else:
-            if solid_indicator_on:
-                turn_off_solid_indicator(handle)
-                indicator_blinking()
+            print("Lock is not connected, turning on blinking indicator.")
+            indicator_blinking()
     
