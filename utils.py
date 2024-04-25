@@ -30,6 +30,8 @@ REFRESH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVF9DVVNUT01fTkNJIn0.eyJpZCI6ImV
 
 WEBSERVER = "www.safepi.org"
 PORT = 443
+CONNECTION_STATUS = "connected:False"
+
 # ANSI escape chars
 GREEN = "\033[32m"
 RED = "\033[31m"
@@ -41,12 +43,19 @@ door_list = ['Door']
 #####################################################################################
 
 def device_functions():
+    global CONNECTION_STATUS
     while True:
+        # update the readchar
+        if internet_on:
+            CONNECTION_STATUS = "connection:True"
+        else:
+            CONNECTION_STATUS = "connection:False"
+
+        # update the server
         if ACCESS_TOKEN != '':
             update_status()
         time.sleep(3)
 
-            
         # blink or turn on solid LED to indicate whether network is on.
         # if internet_on():
         #     indicator_solid()
@@ -119,7 +128,7 @@ def update_status():
         payload=payload,
         headers=headers
     )
-    print(response.text)
+    # print(response.text)
     if 'code' in response.text:
         json_response = response.json()
         code = json_response['code']

@@ -73,8 +73,6 @@ def run_client(args):
                             if len(shell_args) == 1:
                                 shell_args.append(input('Enter message:'))
                             await write_cmd(client, shell_args)
-                        if command == 'status':
-                            status()
                         if command == 'help' or command == '?':
                             menu = f"\nCOMMANDS:\n" \
                                     "help                      -> List commands\n" \
