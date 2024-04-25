@@ -7,7 +7,7 @@ import subprocess
 import requests
 import lgpio
 import os
-import threading
+import logging
 import json
 import ssl
 import hashlib
@@ -17,6 +17,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
 
+logging.getLogger("requests").setLevel(logging.WARNING)
 
 # Hardcoded AES key (32 bytes for AES-256)
 AES_KEY = b'\x01\x23\x45\x67\x89\xab\xcd\xef\xfe\xdc\xba\x98\x76\x54\x32\x10' \
