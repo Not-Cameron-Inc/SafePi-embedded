@@ -318,23 +318,21 @@ def indicator_solid():
         lgpio.gpio_write(handle, LED_PIN, 0)
         lgpio.gpiochip_close(handle)
 
-def indicator_blinking():
+def indicator_blinking(stop_event):
     LED_PIN = 14
-    BLINK_INTERVAL = 0.5 
+    BLINK_INTERVAL = 0.5  
     handle = setup_gpio(LED_PIN)
     try:
-        end_time = time.time() + INTERVAL
-        while time.time() < end_time:
-            lgpio.gpio_write(handle, LED_PIN, 1)  # Turn the LED on
+        while not stop_event.is_set():  
+            lgpio.gpio_write(handle, LED_PIN, 1)  
             time.sleep(BLINK_INTERVAL)
-            lgpio.gpio_write(handle, LED_PIN, 0)  # Turn the LED off
+            lgpio.gpio_write(handle, LED_PIN, 0) 
             time.sleep(BLINK_INTERVAL)
     finally:
-        # Do not turn off the LED here, just close the handle
-        lgpio.gpiochip_close(handle)
+        lgpio.gpiochip_close(handle)  
 
 def manage_indicator():
-    stop_blinking_event = threading.Event()  # Event to stop the blinking thread
+    stop_blinking_event = threading.Event() 
     blinking_thread = None
 
     while True:
@@ -352,8 +350,6 @@ def manage_indicator():
                 print("Lock is not connected, turning on blinking indicator.")
         
         time.sleep(INTERVAL)  # Sleep for some time before checking again
-
-
 
 
 def read_lock(door):
