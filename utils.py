@@ -56,7 +56,7 @@ def device_functions():
         # update the server
         if ACCESS_TOKEN != '':
             update_status()
-        time.sleep(3)
+        time.sleep(10)
 
         # blink or turn on solid LED to indicate whether network is on.
         # if internet_on():
@@ -271,7 +271,6 @@ def provision(access, refresh):
     ACCESS_TOKEN = access
     REFRESH_TOKEN = refresh
     # logging.debug(f"ACCESS: {ACCESS_TOKEN}\nREFRESH: {REFRESH_TOKEN}")
-
 
 def reboot():
     try:
