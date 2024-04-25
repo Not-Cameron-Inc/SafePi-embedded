@@ -320,19 +320,19 @@ def indicator_solid():
 
 def indicator_blinking():
     LED_PIN = 14
-    BLINK_INTERVAL = 1
+    BLINK_INTERVAL = 0.5 
     handle = setup_gpio(LED_PIN)
-    # print("Blinking LED indicator active.")
-    start_time = time.time()
     try:
-        while time.time() - start_time*2 < INTERVAL:
+        end_time = time.time() + INTERVAL
+        while time.time() < end_time:
             lgpio.gpio_write(handle, LED_PIN, 1)  # Turn the LED on
             time.sleep(BLINK_INTERVAL)
             lgpio.gpio_write(handle, LED_PIN, 0)  # Turn the LED off
             time.sleep(BLINK_INTERVAL)
     finally:
-        lgpio.gpio_write(handle, LED_PIN, 0)
+        # Do not turn off the LED here, just close the handle
         lgpio.gpiochip_close(handle)
+
 
 
 def read_lock(door):
