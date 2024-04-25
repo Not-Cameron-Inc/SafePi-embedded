@@ -308,7 +308,7 @@ def setup_gpio(pin):
 def indicator_solid():
     LED_PIN = 14
     handle = setup_gpio(LED_PIN)
-    print("Solid LED indicator active.")
+    # print("Solid LED indicator active.")
     try:
         lgpio.gpio_write(handle, LED_PIN, 1)  # Keep the LED on
         time.sleep(INTERVAL)  # Maintain solid light for the interval duration
@@ -323,7 +323,7 @@ def indicator_blinking():
     LED_PIN = 14
     BLINK_INTERVAL = 1
     handle = setup_gpio(LED_PIN)
-    print("Blinking LED indicator active.")
+    # print("Blinking LED indicator active.")
     start_time = time.time()
     try:
         while time.time() - start_time < INTERVAL:
@@ -393,8 +393,9 @@ if __name__ == "__main__":
     # print(f"Decrypted: {decrypted_text}")
 
     while True:
+        lock_connected = read_lock('Door1')
         # Check lock status and update LED indicator accordingly
-        if read_lock('Door1'):
+        if lock_connected:
             print("Lock is connected, turning on solid indicator.")
             indicator_solid()
         else:
