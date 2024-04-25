@@ -288,69 +288,70 @@ def shutdown():
 #####################################################################################
 #                                   GPIO CONTROLS                                   #
 #####################################################################################
-    
+
+def free_gpio_pin(handle, pin):
+    """ Manually free a GPIO pin. """
+    try:
+        lgpio.gpio_free(handle, pin)
+    except lgpio.error as e:
+        print(f"Failed to free pin: {e}")
+
 def setup_gpio(pin):
-    """ Function to initialize the GPIO pin """
-    h = lgpio.gpiochip_open(0)  # Open the default gpiochip
-    lgpio.gpio_claim_output(h, pin)
-    return h
-    
+    """ Set up GPIO pin as output. """
+    handle = lgpio.gpiochip_open(0)
+    free_gpio_pin(handle, pin)  # Try to free the pin first
+    lgpio.gpio_claim_output(handle, pin)
+    return handle
+
 def indicator_solid():
-    """ Function that turns on indicator light, indicating wifi is connected """
+    """ Turn on an indicator light, indicating wifi is connected. """
     LED_PIN = 14
     handle = setup_gpio(LED_PIN)
     try:
         lgpio.gpio_write(handle, LED_PIN, 1)
-    except KeyboardInterrupt:
-        lgpio.gpio_write(handle, LED_PIN, 0)  # Ensure LED is turned off on exit
+    except Exception as e:
+        print(f"Error during operation: {e}")
+    finally:
+        lgpio.gpio_write(handle, LED_PIN, 0)  # Ensure LED is turned off
         lgpio.gpiochip_close(handle)  # Release the GPIO pin
 
 def indicator_blinking():
-    """ Function that blinks indicator light. Used when network is down. """
+    """ Blink an indicator light, used when the network is down. """
     LED_PIN = 14
     BLINK_INTERVAL = 1
     handle = setup_gpio(LED_PIN)
     try:
-        for i in range(INTERVAL):
+        while True:  # Changed from for loop to while for continuous blinking
             lgpio.gpio_write(handle, LED_PIN, 1)  # Turn the LED on
             time.sleep(BLINK_INTERVAL)
             lgpio.gpio_write(handle, LED_PIN, 0)  # Turn the LED off
             time.sleep(BLINK_INTERVAL)
-    except KeyboardInterrupt:
-        lgpio.gpio_write(handle, LED_PIN, 0)  # Ensure LED is turned off on exit
-        lgpio.gpiochip_close(handle) 
+    except Exception as e:
+        print(f"Error during operation: {e}")
+    finally:
+        lgpio.gpio_write(handle, LED_PIN, 0)  # Ensure LED is turned off
+        lgpio.gpiochip_close(handle)
 
 def read_lock(door):
-    handle = lgpio.gpiochip_open(0)  
+    """ Read if a door lock pin is connected (closed circuit). """
+    handle = lgpio.gpiochip_open(0)
     output_pin = LOCKLIST[door][0]
-    input_pin = LOCKLIST[door][1] 
+    input_pin = LOCKLIST[door][1]
     try:
-        # Set the output pin
         lgpio.gpio_claim_output(handle, output_pin)
-        # Set the input pin
         lgpio.gpio_claim_input(handle, input_pin)
-        
-        # Set output pin high
         lgpio.gpio_write(handle, output_pin, 1)
-        # Give a little time for the state to settle
         time.sleep(0.1)
-        
-        # Read the input pin
         is_connected = lgpio.gpio_read(handle, input_pin)
-        
-        # Interpret the result
-        if is_connected == 1:
-            print("The pins are connected.")
-            return True
-        else:
-            print("The pins are not connected.")
-            return False
+        return is_connected == 1
+    except Exception as e:
+        print(f"Error during operation: {e}")
+        return False
     finally:
-        # Clean up, release the pins
         lgpio.gpio_free(handle, output_pin)
         lgpio.gpio_free(handle, input_pin)
         lgpio.gpiochip_close(handle)
-        return False
+
     
 
 if __name__ == "__main__":
