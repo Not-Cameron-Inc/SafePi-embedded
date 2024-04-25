@@ -46,7 +46,7 @@ def device_functions():
     global CONNECTION_STATUS
     while True:
         # update the readchar
-        if internet_on:
+        if internet_on():
             CONNECTION_STATUS = "connection:True"
         else:
             CONNECTION_STATUS = "connection:False"
@@ -128,7 +128,7 @@ def update_status():
         payload=payload,
         headers=headers
     )
-    
+
     # print(response.text)
     if not isinstance(response, dict):
         if 'code' in response.text:
