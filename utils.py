@@ -69,7 +69,7 @@ def internet_on():
         return False
 
 def update_connection_status(status):
-    status_str = f"connection:{status}"
+    status_str = f"connected:{status}"
     with open("shared-memory.txt", "w") as file:
         file.write(status_str)
 
