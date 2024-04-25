@@ -267,9 +267,11 @@ network:
         subprocess.run(["/bin/rm", temp_path], check=False)
 
 def provision(access, refresh):
+    global ACCESS_TOKEN
+    global REFRESH_TOKEN
     ACCESS_TOKEN = access
     REFRESH_TOKEN = refresh
-    logging.debug(f"ACCESS: {ACCESS_TOKEN}\nREFRESH: {REFRESH_TOKEN}")
+    # logging.debug(f"ACCESS: {ACCESS_TOKEN}\nREFRESH: {REFRESH_TOKEN}")
 
 
 def reboot():
