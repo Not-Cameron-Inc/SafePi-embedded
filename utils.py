@@ -30,7 +30,6 @@ REFRESH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVF9DVVNUT01fTkNJIn0.eyJpZCI6ImV
 
 WEBSERVER = "www.safepi.org"
 PORT = 443
-CONNECTION_STATUS = "connected:False"
 
 # ANSI escape chars
 GREEN = "\033[32m"
@@ -43,13 +42,12 @@ door_list = ['Door']
 #####################################################################################
 
 def device_functions():
-    global CONNECTION_STATUS
     while True:
         # update the readchar
         if internet_on():
-            CONNECTION_STATUS = "connection:True"
+            update_connection_status(True)
         else:
-            CONNECTION_STATUS = "connection:False"
+            update_connection_status(False)
 
         # update the server
         if ACCESS_TOKEN != '':
@@ -69,7 +67,19 @@ def internet_on():
         return response.status_code == 200
     except requests.RequestException:
         return False
-    
+
+def update_connection_status(status):
+    status_str = f"connection:{status}"
+    with open("shared-memory.txt", "w") as file:
+        file.write(status_str)
+
+def read_connection_status():
+    try:
+        with open("shared-memory.txt", "r") as file:
+            return file.read().strip()
+    except FileNotFoundError:
+        return "connection:False"
+
 def send_request(dest='www.safepi.org', port=443, type='POST', path="", payload=None, headers=DEFAULT_HEADER, token=""):
     """ This function allows requests to the server """
     url = f'https://{dest}:{port}/{path}'
