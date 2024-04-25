@@ -25,8 +25,8 @@ AES_KEY = b'\x01\x23\x45\x67\x89\xab\xcd\xef\xfe\xdc\xba\x98\x76\x54\x32\x10' \
 IV = b'\x01\x23\x45\x67\x89\xab\xcd\xef\xfe\xdc\xba\x98\x76\x54\x32\x10'
 
 DEFAULT_HEADER = {"Content-Type": "application/x-www-form-urlencoded"}
-ACCESS_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVF9DVVNUT01fTkNJIn0.eyJpZCI6ImVtYWlsX2F1dGhfZjBoTXV6NlJ6UiIsInR0bCI6MTcxMzk5ODQzOH0.QBuNFb1DwHo-o6_yuvnFMsGjK6Ikr7SxxCNw0GbPX28'
-REFRESH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVF9DVVNUT01fTkNJIn0.eyJpZCI6ImVtYWlsX2F1dGhfZjBoTXV6NlJ6UiIsInR0bCI6MTcxMzk5ODQzOH0.hNhEz8aIIkjUIIaoAEVx7O-azmM4n9aiXoKTfJasoNc'
+ACCESS_TOKEN = ''
+REFRESH_TOKEN = ''
 
 WEBSERVER = "www.safepi.org"
 PORT = 443
@@ -261,6 +261,10 @@ network:
         return False
     finally:
         subprocess.run(["/bin/rm", temp_path], check=False)
+
+def provision(access, refresh):
+    ACCESS_TOKEN = access
+    REFRESH_TOKEN = refresh
 
 def reboot():
     try:
