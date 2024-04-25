@@ -294,7 +294,7 @@ def free_gpio_pin(handle, pin):
     try:
         lgpio.gpio_free(handle, pin)
     except lgpio.error as e:
-        if str(e) != "GPIO not allocated":
+        if str(e) != "'GPIO not allocated'":
             print(f"Failed to free pin: {e}")
 
 def setup_gpio(pin):
