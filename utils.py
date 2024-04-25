@@ -27,6 +27,7 @@ AES_KEY = b'\x01\x23\x45\x67\x89\xab\xcd\xef\xfe\xdc\xba\x98\x76\x54\x32\x10' \
           b'\x01\x23\x45\x67\x89\xab\xcd\xef\xfe\xdc\xba\x98\x76\x54\x32\x10'
 # Hardcoded IV (16 bytes for AES-CBC)
 IV = b'\x01\x23\x45\x67\x89\xab\xcd\xef\xfe\xdc\xba\x98\x76\x54\x32\x10'
+INTERVAL = 5
 
 DEFAULT_HEADER = {"Content-Type": "application/x-www-form-urlencoded"}
 ACCESS_TOKEN = ''
@@ -56,13 +57,13 @@ def device_functions():
         # update the server
         if ACCESS_TOKEN != '':
             update_status()
-        time.sleep(10)
+        time.sleep(INTERVAL)
 
         # blink or turn on solid LED to indicate whether network is on.
-        # if internet_on():
-        #     indicator_solid()
-        # else:
-        #     indicator_blinking()
+        if internet_on():
+            indicator_solid()
+        else:
+            indicator_blinking()
 
 def internet_on():
     """ Checks if we are connected to the internet """
@@ -310,14 +311,14 @@ def indicator_blinking():
     BLINK_INTERVAL = 1
     handle = setup_gpio(LED_PIN)
     try:
-        while True:
+        for i in range(INTERVAL):
             lgpio.gpio_write(handle, LED_PIN, 1)  # Turn the LED on
             time.sleep(BLINK_INTERVAL)
             lgpio.gpio_write(handle, LED_PIN, 0)  # Turn the LED off
             time.sleep(BLINK_INTERVAL)
     except KeyboardInterrupt:
         lgpio.gpio_write(handle, LED_PIN, 0)  # Ensure LED is turned off on exit
-        lgpio.gpiochip_close(handle)  # Release the GPIO pin
+        lgpio.gpiochip_close(handle) 
 
 def read_lock(door):
     handle = lgpio.gpiochip_open(0)  
@@ -375,4 +376,11 @@ if __name__ == "__main__":
     # print(f"Decrypted: {decrypted_text}")
 
     read_lock('Door1')
-
+    num = 2
+    while True:
+        if num % 2 == 0:
+            indicator_blinking()
+        else:
+            indicator_solid()
+        num += 1
+    
