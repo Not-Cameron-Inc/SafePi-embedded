@@ -39,7 +39,7 @@ PORT = 443
 GREEN = "\033[32m"
 RED = "\033[31m"
 RESET = "\033[0m"
-door_list = ['Door']
+LOCKLIST = {"Door1": [17,27]}
 
 #####################################################################################
 #                                   UTILITIES                                       #
@@ -319,25 +319,35 @@ def indicator_blinking():
         lgpio.gpio_write(handle, LED_PIN, 0)  # Ensure LED is turned off on exit
         lgpio.gpiochip_close(handle)  # Release the GPIO pin
 
-def read_lock(handle, output_pin, input_pin):
-    # Set the output pin
-    lgpio.gpio_claim_output(handle, output_pin)
-    # Set the input pin
-    lgpio.gpio_claim_input(handle, input_pin)
+def read_lock(door):
+    handle = lgpio.gpiochip_open(0)  
+    output_pin = LOCKLIST[door][0]
+    input_pin = LOCKLIST[door][1] 
+    try:
+        # Set the output pin
+        lgpio.gpio_claim_output(handle, output_pin)
+        # Set the input pin
+        lgpio.gpio_claim_input(handle, input_pin)
+        
+        # Set output pin high
+        lgpio.gpio_write(handle, output_pin, 1)
+        # Give a little time for the state to settle
+        time.sleep(0.1)
+        
+        # Read the input pin
+        is_connected = lgpio.gpio_read(handle, input_pin)
+        
+        # Interpret the result
+        if is_connected == 1:
+            print("The pins are connected.")
+        else:
+            print("The pins are not connected.")
+    finally:
+        # Clean up, release the pins
+        lgpio.gpio_free(handle, output_pin)
+        lgpio.gpio_free(handle, input_pin)
+        lgpio.gpiochip_close(handle)
     
-    # Set output pin high
-    lgpio.gpio_write(handle, output_pin, 1)
-    # Give a little time for the state to settle
-    time.sleep(0.1)
-    
-    # Read the input pin
-    is_connected = lgpio.gpio_read(handle, input_pin)
-    
-    # Interpret the result
-    if is_connected == 1:
-        print("The pins are connected.")
-    else:
-        print("The pins are not connected.")
 
 if __name__ == "__main__":
     # example of data and time we will be using
@@ -361,14 +371,5 @@ if __name__ == "__main__":
     # decrypted_text = decrypt(encrypted_text, AES_KEY, IV)
     # print(f"Decrypted: {decrypted_text}")
 
-    handle = lgpio.gpiochip_open(0)  
-    output_pin = 17  # GPIO 17 as output, change as needed
-    input_pin = 27   # GPIO 27 as input, change as needed
+    read_lock(1)
 
-    try:
-        read_lock(handle, output_pin, input_pin)
-    finally:
-        # Clean up, release the pins
-        lgpio.gpio_free(handle, output_pin)
-        lgpio.gpio_free(handle, input_pin)
-        lgpio.gpiochip_close(handle)
