@@ -144,7 +144,7 @@ def update_status():
         payload=payload,
         headers=headers
     )
-
+    logging.debug(response)
     if not isinstance(response, dict):
         if 'code' in response.text:
             json_response = response.json()
