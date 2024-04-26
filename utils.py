@@ -57,13 +57,13 @@ def device_functions():
 
 def internet_on():
     """ Checks if we are connected to the internet """
-    # try:
-    #     response = requests.get('http://google.com', timeout=1)
-    #     update_connection_status(True)
-    #     return True
-    # except requests.RequestException:
-    #     update_connection_status(False)
-    return False
+    try:
+        response = requests.get('http://google.com', timeout=1)
+        update_connection_status(True)
+        return True
+    except requests.RequestException:
+        update_connection_status(False)
+        return False
 
 def update_connection_status(status):
     status_str = f"connected:{status}"
