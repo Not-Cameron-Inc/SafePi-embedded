@@ -291,24 +291,30 @@ def free_gpio_pin(handle, pin):
             print(f"Failed to free pin: {e}")
 
 def setup_gpio(pin):
-    """ Set up GPIO pin as output. """
     handle = lgpio.gpiochip_open(0)
-    free_gpio_pin(handle, pin)
+    try:
+        # Try to free the pin first in case it was previously claimed
+        lgpio.gpio_free(handle, pin)
+    except lgpio.error as e:
+        print(f"Error freeing pin {pin}: {e}")
+
+    # Now attempt to claim the output
     lgpio.gpio_claim_output(handle, pin)
     return handle
 
-def indicator_blinking(stop_event):
+
+def indicator_blinking():
     LED_PIN = 14
-    BLINK_INTERVAL = 0.5  
-    handle = setup_gpio(LED_PIN)
+    handle = None
     try:
-        while not stop_event.is_set():  
-            lgpio.gpio_write(handle, LED_PIN, 1)  
-            time.sleep(BLINK_INTERVAL)
-            lgpio.gpio_write(handle, LED_PIN, 0) 
-            time.sleep(BLINK_INTERVAL)
+        handle = setup_gpio(LED_PIN)
+        # Blinking code here...
+    except Exception as e:
+        print(f"Exception in blinking: {e}")
     finally:
-        lgpio.gpiochip_close(handle)  
+        if handle is not None:
+            lgpio.gpio_free(handle, LED_PIN)
+            lgpio.gpiochip_close(handle)
 
 def manage_indicator():
     stop_blinking_event = threading.Event() 
