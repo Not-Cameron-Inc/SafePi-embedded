@@ -92,8 +92,6 @@ def send_request(dest='www.safepi.org', port=443, type='POST', path="", payload=
         # URL-encode the payload if the content type is 'application/x-www-form-urlencoded'
         data = urllib.parse.urlencode(payload) if isinstance(payload, dict) else payload
 
-    print("\nSending data:", url, headers, data)
-
     try:
         # Select the HTTP method and send the request
         if type == 'GET':
@@ -142,7 +140,6 @@ def update_status():
         headers=headers
     )
     if not isinstance(response, dict):
-        print(response.text)
         if 'code' in response.text:
             json_response = response.json()
             code = json_response['code']
