@@ -48,19 +48,13 @@ LOCKLIST = {"Door1": [17,27]}
 
 def device_functions():
     while True:
-        # update the readchar
-        if internet_on():
-            update_connection_status(True)
-        else:
-            update_connection_status(False)
+        # blink or turn on solid LED to indicate whether network is on.
+        threading.Thread(target=manage_indicator).start()
 
         # update the server
         if ACCESS_TOKEN != '':
             update_status()
         time.sleep(INTERVAL)
-
-        # blink or turn on solid LED to indicate whether network is on.
-        # threading.Thread(target=manage_indicator).start()
 
 def internet_on():
     """ Checks if we are connected to the internet """
