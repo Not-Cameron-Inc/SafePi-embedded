@@ -299,45 +299,50 @@ def free_gpio_pin(handle, pin):
 
 def setup_gpio(pin):
     handle = lgpio.gpiochip_open(0)
-    # Attempt to claim the output
+    try:
+        # Try to free the pin first in case it was previously claimed
+        lgpio.gpio_free(handle, pin)
+    except lgpio.error as e:
+        # print(f"Error freeing pin {pin}: {e}")
+        pass
+
+    # Now attempt to claim the output
     lgpio.gpio_claim_output(handle, pin)
     return handle
 
-def indicator_blinking(stop_blinking_event, LED_PIN):
-    handle = setup_gpio(LED_PIN)
+def indicator_blinking(stop_blinking_event):
+    LED_PIN = 14
+    handle = None
     try:
+        handle = setup_gpio(LED_PIN)
         while not stop_blinking_event.is_set():
-            lgpio.gpio_write(handle, LED_PIN, 1)  # Turn the LED on
-            time.sleep(0.5)  # Adjust timing as needed
-            lgpio.gpio_write(handle, LED_PIN, 0)  # Turn the LED off
-            time.sleep(0.5)
+            lgpio.gpio_write(handle, LED_PIN, 1) 
+            time.sleep(0.25)  
+            lgpio.gpio_write(handle, LED_PIN, 0) 
+            time.sleep(0.25)
+    except Exception as e:
+        pass
     finally:
-        lgpio.gpio_free(handle, LED_PIN)
-        lgpio.gpiochip_close(handle)
+        if handle is not None:
+            lgpio.gpio_free(handle, LED_PIN)
+            lgpio.gpiochip_close(handle)
 
 def manage_indicator():
-    LED_PIN = 14  # Set the appropriate GPIO pin number for the LED
-    handle = setup_gpio(LED_PIN)
-    stop_blinking_event = threading.Event()
+    stop_blinking_event = threading.Event() 
     blinking_thread = None
 
-    try:
-        while True:
-            connected = internet_on()
-            if connected:
-                if blinking_thread and blinking_thread.is_alive():
-                    stop_blinking_event.set()
-                    blinking_thread.join()  # Wait for the blinking thread to finish
-                lgpio.gpio_write(handle, LED_PIN, 1)  # Turn the LED on solidly
-            else:
-                if blinking_thread is None or not blinking_thread.is_alive():
-                    stop_blinking_event.clear()
-                    blinking_thread = threading.Thread(target=indicator_blinking, args=(stop_blinking_event, LED_PIN))
-                    blinking_thread.start()
-            time.sleep(INTERVAL)
-    finally:
-        lgpio.gpio_free(handle, LED_PIN)
-        lgpio.gpiochip_close(handle)
+    while True:
+        connected = internet_on()
+        if connected:
+            if blinking_thread and blinking_thread.is_alive():
+                stop_blinking_event.set() 
+                blinking_thread.join() 
+        else:
+            if blinking_thread is None or not blinking_thread.is_alive():
+                stop_blinking_event.clear()  # Clear the event for a fresh start
+                blinking_thread = threading.Thread(target=indicator_blinking, args=(stop_blinking_event,))
+                blinking_thread.start()        
+        time.sleep(INTERVAL) 
 
 def read_lock(door):
     handle = lgpio.gpiochip_open(0)  
