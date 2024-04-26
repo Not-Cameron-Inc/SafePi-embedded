@@ -393,5 +393,6 @@ if __name__ == "__main__":
     # decrypted_text = decrypt(encrypted_text, AES_KEY, IV)
     # print(f"Decrypted: {decrypted_text}")
     
-    threading.Thread(target=manage_indicator).start()
+    # threading.Thread(target=manage_indicator).start()
+    update_status()
     
