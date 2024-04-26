@@ -50,7 +50,6 @@ def device_functions():
     while True:
         # blink or turn on solid LED to indicate whether network is on.
         threading.Thread(target=manage_indicator).start()
-
         # update the server
         if ACCESS_TOKEN != '':
             update_status()
@@ -60,7 +59,7 @@ def internet_on():
     """ Checks if we are connected to the internet """
     try:
         response = requests.get('http://google.com', timeout=1)
-        return response.status_code == 200
+        return True
     except requests.RequestException:
         return False
 
