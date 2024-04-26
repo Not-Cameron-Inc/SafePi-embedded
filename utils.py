@@ -5,7 +5,7 @@ import datetime
 import requests
 import subprocess
 import requests
- lgpio
+import lgpio
 import os
 import logging
 import threading
