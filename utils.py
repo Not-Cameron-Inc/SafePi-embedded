@@ -317,9 +317,9 @@ def indicator_blinking(stop_blinking_event):
         handle = setup_gpio(LED_PIN)
         while not stop_blinking_event.is_set():
             lgpio.gpio_write(handle, LED_PIN, 1) 
-            time.sleep(0.25)  
+            time.sleep(0.5)  
             lgpio.gpio_write(handle, LED_PIN, 0) 
-            time.sleep(0.25)
+            time.sleep(0.5)
     except Exception as e:
         pass
     finally:
