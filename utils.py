@@ -134,8 +134,8 @@ def update_status():
         payload=payload,
         headers=headers
     )
-    print(response)
     if not isinstance(response, dict):
+        print(response.text)
         if 'code' in response.text:
             json_response = response.json()
             code = json_response['code']
