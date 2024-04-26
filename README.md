@@ -145,9 +145,9 @@ Description=Startup for SafePi BLE broadcast server.
 
 [Service]
 WorkingDirectory=/home/safepi/SafePi-embedded
-Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/aarch64-linux-gnu"
 ExecStartPre=/bin/sleep 10
-ExecStart=/home/safepi/SafePi-embedded/venv/bin/python3 safepi.py &
+ExecStart=/home/safepi/SafePi-embedded/venv/bin/python3 safepi.py
 
 [Install]
 WantedBy=multi-user.target
