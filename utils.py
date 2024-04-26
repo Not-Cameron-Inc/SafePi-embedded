@@ -117,11 +117,18 @@ def update_status():
     global REFRESH_TOKEN
     locked = read_lock("Door1")
     logging.debug(f'Locked status: {locked}')
-    payload = {
-        'isLocked': str(locked),
-        'access_token': ACCESS_TOKEN,
-        'refresh_token': REFRESH_TOKEN
-    }
+    if locked:
+        payload = {
+            'isLocked': 'true',
+            'access_token': ACCESS_TOKEN,
+            'refresh_token': REFRESH_TOKEN
+        }
+    else:
+        payload = {
+            'isLocked': 'false',
+            'access_token': ACCESS_TOKEN,
+            'refresh_token': REFRESH_TOKEN
+        }
 
     headers = {
         'Content-Type': 'application/json'
