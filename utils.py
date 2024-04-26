@@ -58,12 +58,11 @@ def device_functions():
 
 def internet_on():
     """ Checks if we are connected to the internet """
-    # try:
-    #     response = requests.get('http://google.com', timeout=1)
-    #     return response.status_code == 200
-    # except requests.RequestException:
-    #     return False
-    return False
+    try:
+        response = requests.get('http://google.com', timeout=1)
+        return response.status_code == 200
+    except requests.RequestException:
+        return False
 
 def update_connection_status(status):
     status_str = f"connected:{status}"
@@ -118,6 +117,7 @@ def update_status():
     global ACCESS_TOKEN
     global REFRESH_TOKEN
     locked = read_lock("Door1")
+    logging.debug(f'Locked status: {locked}')
     payload = {
         'isLocked': locked,
         'access_token': ACCESS_TOKEN,
@@ -303,7 +303,6 @@ def setup_gpio(pin):
     lgpio.gpio_claim_output(handle, pin)
     return handle
 
-
 def indicator_blinking(stop_blinking_event):
     LED_PIN = 14
     handle = None
@@ -322,7 +321,6 @@ def indicator_blinking(stop_blinking_event):
         if handle is not None:
             lgpio.gpio_free(handle, LED_PIN)
             lgpio.gpiochip_close(handle)
-
 
 def manage_indicator():
     stop_blinking_event = threading.Event() 
