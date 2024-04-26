@@ -11,6 +11,7 @@ def read_request(characteristic: BlessGATTCharacteristic, **kwargs) -> bytearray
     # This is where we define what data is returned when the characteristic is read
     # For example, return a simple string converted to bytes"
     message = read_connection_status()
+    logging.debug(message)
     encrypted_message = encrypt(message, '', '')
 
     client_info = kwargs.get('client_identifier', 'Unknown')  # Adjust based on actual available data

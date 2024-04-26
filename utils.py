@@ -59,8 +59,10 @@ def internet_on():
     """ Checks if we are connected to the internet """
     try:
         response = requests.get('http://google.com', timeout=1)
+        update_connection_status(True)
         return True
     except requests.RequestException:
+        update_connection_status(False)
         return False
 
 def update_connection_status(status):
@@ -73,6 +75,7 @@ def read_connection_status():
         with open("shared-memory.txt", "r") as file:
             return file.read().strip()
     except FileNotFoundError:
+        logging.debug("shared-memory.txt not found")
         return "connection:False"
 
 def send_request(dest='www.safepi.org', port=443, type='POST', path="", payload=None, headers=DEFAULT_HEADER, token=""):
