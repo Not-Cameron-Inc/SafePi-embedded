@@ -118,7 +118,7 @@ def update_status():
     locked = read_lock("Door1")
     logging.debug(f'Locked status: {locked}')
     payload = {
-        'isLocked': locked,
+        'isLocked': str(locked),
         'access_token': ACCESS_TOKEN,
         'refresh_token': REFRESH_TOKEN
     }
