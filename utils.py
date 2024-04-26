@@ -62,7 +62,6 @@ def device_functions():
         # blink or turn on solid LED to indicate whether network is on.
         # threading.Thread(target=manage_indicator).start()
 
-
 def internet_on():
     """ Checks if we are connected to the internet """
     try:
@@ -321,8 +320,8 @@ def manage_indicator():
     blinking_thread = None
 
     while True:
-        # connected = internet_on()
-        connected = read_lock('Door1')
+        connected = internet_on()
+        # connected = read_lock('Door1')
         if connected:
             if blinking_thread and blinking_thread.is_alive():
                 stop_blinking_event.set() 
