@@ -296,7 +296,8 @@ def setup_gpio(pin):
         # Try to free the pin first in case it was previously claimed
         lgpio.gpio_free(handle, pin)
     except lgpio.error as e:
-        print(f"Error freeing pin {pin}: {e}")
+        # print(f"Error freeing pin {pin}: {e}")
+        pass
 
     # Now attempt to claim the output
     lgpio.gpio_claim_output(handle, pin)
@@ -315,7 +316,8 @@ def indicator_blinking(stop_blinking_event):
             lgpio.gpio_write(handle, LED_PIN, 0)  # Turn the LED off
             time.sleep(0.5)
     except Exception as e:
-        print(f"Exception in blinking: {e}")
+        # print(f"Exception in blinking: {e}")
+        pass
     finally:
         if handle is not None:
             lgpio.gpio_free(handle, LED_PIN)
