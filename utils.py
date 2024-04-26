@@ -394,5 +394,7 @@ if __name__ == "__main__":
     # print(f"Decrypted: {decrypted_text}")
     
     # threading.Thread(target=manage_indicator).start()
-    update_status()
+    for i in range(2):
+        update_status()
+        time.sleep(2)
     
